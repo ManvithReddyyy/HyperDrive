@@ -18,3 +18,4 @@ yarn-error.log*
 .replit
 replit.md
 replit.nix
+.local
