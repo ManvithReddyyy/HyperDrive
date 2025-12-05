@@ -1,0 +1,148 @@
+Role & Context
+You are an expert Senior Full-Stack Engineer and Product Designer specializing in high-performance Deep Tech dashboards.
+
+I want you to generate the full project structure and starter code for a web app called HyperDrive, placed in PS M:\coding_environment\HyperDrive>.
+
+HyperDrive is an AI model optimization platform that takes heavy AI models and makes them faster and smaller.
+
+🎨 1. THE DESIGN SYSTEM (Strict Notion Aesthetic)
+Global Aesthetic: "Sophisticated Minimalism." The UI must be indistinguishable from a native Notion page.
+
+Typography: Use Inter (from next/font/google) for all UI text. Use JetBrains Mono or standard Monospace for code/logs.
+
+Rule: No large headers. Use weight (font-medium) and color (text-zinc-900) to create hierarchy, not size.
+
+Color Palette (Tailwind "Zinc"):
+
+Backgrounds: bg-white for cards, bg-[#F7F7F5] (Notion gray) for the main app background/sidebar.
+
+Text: Primary text-[#37352f] (Notion black), Secondary text-[#9B9A97].
+
+Borders: Very subtle border-[#E0E0E0].
+
+Components:
+
+Buttons: Small height (h-7 or h-8), subtle hover states, no drop shadows.
+
+Icons: lucide-react (size 14px or 16px).
+
+Layout: High information density, lots of whitespace, no "flashy" gradients.
+
+🟦 2. FRONTEND (Next.js 14 + TypeScript)
+Framework: Next.js 14 (App Router). Styling: TailwindCSS, shadcn/ui.
+
+Layout & Navigation
+Sidebar: Fixed width (w-60), flat gray background. Links: "New Optimization", "Job History", "Playground", "Deployment".
+
+TopNav: Minimal breadcrumbs (e.g., HyperDrive / Jobs / #8291a).
+
+Feature Specifications (The "Why"):
+Page: /upload (Configuration & Ingest)
+
+Purpose: The user needs to define how to solve the latency problem.
+
+UI:
+
+Left Panel: A clean Drag & Drop zone.
+
+Right Panel (Properties): A Notion-style property list.
+
+Quantization: Select [INT8, FP16].
+
+Target Device: Select [NVIDIA A100, T4, CPU].
+
+Strategy: Select [Latency Focus, Accuracy Focus].
+
+Action: "Optimize Model" button → triggers Backend API.
+
+Page: /jobs/[id] (The Real-Time Matrix)
+
+Purpose: AI optimization is a "black box." The user needs transparency to trust the process.
+
+UI:
+
+Visual Pipeline: A vertical step tracker (e.g., "1. Graph Fusion", "2. Quantization").
+
+Live Terminal: A black code block (bg-[#1e1e1e]) that streams logs line-by-line via WebSockets.
+
+Progress: A minimal progress bar (h-1) at the top.
+
+Page: /playground (Verification & Trust)
+
+Purpose: Users won't deploy an optimized model if they think it broke the accuracy. They need to verify it works.
+
+UI:
+
+Split Screen: Two panels side-by-side.
+
+Input: A text area for the prompt.
+
+Comparison:
+
+Left: Original Model Output + Latency (e.g., "120ms").
+
+Right: Optimized Model Output + Latency (e.g., "45ms" in Green).
+
+Action: "Run Inference" button calls the backend to mock-run both.
+
+Page: /deploy (Deployment Value)
+
+Purpose: Solving the "Last Mile" problem. After optimization, the user needs to actually run the model.
+
+UI:
+
+Code Generator: A tabbed view showing "Python (ONNX)", "Triton Server", and "Docker".
+
+Snippet: A pre-generated code block the user can copy-paste to run their specific model immediately.
+
+🟩 3. BACKEND (FastAPI + WebSockets)
+Tech: FastAPI, Redis, MinIO, Python 3.10.
+
+Core Logic:
+
+POST /api/upload: Receives file + JSON config. Generates job_id. Pushes to Redis Queue.
+
+WS /ws/{job_id}: The Real-Time Layer. Connects frontend to Redis Pub/Sub channels to stream logs.
+
+POST /api/inference/compare:
+
+Accepts text. Returns mock results for "Original" vs "Optimized" (e.g., makes the optimized text slightly shorter or faster) to support the Playground UI.
+
+GET /api/deploy/{job_id}: Returns the formatted Python code snippet for the user to copy.
+
+🟥 4. GPU WORKER (Simulated Engine)
+Tech: Python, Redis, Celery (or manual loop).
+
+Behavior:
+
+Simulate Intelligence:
+
+Sleeps for processing time.
+
+Publishes technical logs to Redis (e.g., "Collapsing BatchNorm into Conv2d...", "Calibrating KL Divergence...").
+
+Updates progress percentage.
+
+Output: Saves a dummy .onnx file to MinIO upon completion.
+
+🟨 5. INFRASTRUCTURE
+Generate a production-ready docker-compose.yml:
+
+Frontend (Node 18 Alpine)
+
+Backend (Python 3.10 Slim)
+
+Worker (Python 3.10 Slim)
+
+Redis (Alpine)
+
+MinIO (S3 Storage)
+
+✨ FINAL INSTRUCTIONS
+Aesthetics are Paramount: The UI must look like a productivity tool, not a marketing site. Use the colors specified strictly.
+
+Functional Realism: The WebSocket connection and the "Playground" comparison logic must be implemented in the code (even if the AI inference is mocked).
+
+Completeness: Generate all files required to run docker-compose up.
+
+Begin generating the project.
