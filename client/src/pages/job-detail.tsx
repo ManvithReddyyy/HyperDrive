@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SensitivityChart } from "@/components/business/SensitivityChart";
 import { ArchitectureGraph } from "@/components/business/ArchitectureGraph";
 import { HardwareMatrix } from "@/components/business/HardwareMatrix";
+import { AutopilotLeaderboard } from "@/components/business/AutopilotLeaderboard";
 import type { Job, PipelineStep } from "@shared/schema";
 import { queryClient } from "@/lib/queryClient";
 
@@ -43,12 +44,12 @@ function PipelineStepItem({ step, index }: { step: PipelineStep; index: number }
       data-testid={`pipeline-step-${index}`}
     >
       <div className={`flex h-6 w-6 items-center justify-center rounded-full ${isCompleted ? "bg-green-500/10" :
-          isFailed ? "bg-destructive/10" :
-            isRunning ? "bg-chart-3/10" : "bg-muted"
+        isFailed ? "bg-destructive/10" :
+          isRunning ? "bg-chart-3/10" : "bg-muted"
         }`}>
         <Icon className={`h-3.5 w-3.5 ${isCompleted ? "text-green-600 dark:text-green-400" :
-            isFailed ? "text-destructive" :
-              isRunning ? "text-chart-3 animate-spin" : "text-muted-foreground"
+          isFailed ? "text-destructive" :
+            isRunning ? "text-chart-3 animate-spin" : "text-muted-foreground"
           }`} />
       </div>
       <div className="flex-1">
@@ -291,6 +292,7 @@ export default function JobDetailPage() {
                 <TabsTrigger value="console">Console</TabsTrigger>
                 {isCompleted && <TabsTrigger value="xray">X-Ray Vision</TabsTrigger>}
                 {isCompleted && <TabsTrigger value="analysis">Analysis</TabsTrigger>}
+                {isCompleted && <TabsTrigger value="autopilot">Autopilot</TabsTrigger>}
               </TabsList>
 
               <TabsContent value="console" className="flex-1 min-h-0 overflow-hidden">
@@ -322,6 +324,12 @@ export default function JobDetailPage() {
                       <HardwareMatrix />
                     </div>
                   </div>
+                </TabsContent>
+              )}
+
+              {isCompleted && (
+                <TabsContent value="autopilot" className="flex-1 min-h-0 overflow-auto">
+                  <AutopilotLeaderboard jobId={jobId} />
                 </TabsContent>
               )}
             </Tabs>

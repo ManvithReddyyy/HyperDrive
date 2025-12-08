@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Plus, History, FlaskConical, Rocket, BarChart3, Database } from "lucide-react";
+import { Plus, History, FlaskConical, Rocket, BarChart3, Database, Zap, Scale, Sparkles } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -29,6 +29,16 @@ const navItems = [
     icon: Database,
   },
   {
+    title: "Compare",
+    url: "/compare",
+    icon: Scale,
+  },
+  {
+    title: "Insights",
+    url: "/insights",
+    icon: Sparkles,
+  },
+  {
     title: "Playground",
     url: "/playground",
     icon: FlaskConical,
@@ -53,8 +63,8 @@ export function AppSidebar() {
       <SidebarHeader className="px-4 py-4">
         <Link href="/" data-testid="link-home">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground">
-              <span className="text-xs font-semibold text-background">H</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground hover:[&>svg]:rotate-180">
+              <Zap className="h-5 w-5 text-background transition-transform duration-300" />
             </div>
             <span className="text-sm font-medium text-foreground">HyperDrive</span>
           </div>
@@ -94,3 +104,4 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+

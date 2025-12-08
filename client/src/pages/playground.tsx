@@ -12,17 +12,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { apiRequest, getQueryFn } from "@/lib/queryClient";
+import { DriftSimulator } from "@/components/business/DriftSimulator";
+import { MemoryStressTest } from "@/components/business/MemoryStressTest";
+import { ThroughputBenchmark } from "@/components/business/ThroughputBenchmark";
 import type { InferenceResult, Job } from "@shared/schema";
 
-function OutputPanel({ 
-  title, 
-  output, 
-  latency, 
+function OutputPanel({
+  title,
+  output,
+  latency,
   isOptimized = false,
-  isLoading = false 
-}: { 
-  title: string; 
-  output: string; 
+  isLoading = false
+}: {
+  title: string;
+  output: string;
   latency: number | null;
   isOptimized?: boolean;
   isLoading?: boolean;
@@ -32,9 +35,8 @@ function OutputPanel({
       <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-foreground">{title}</span>
         {latency !== null && (
-          <div className={`flex items-center gap-1.5 text-xs ${
-            isOptimized ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
-          }`}>
+          <div className={`flex items-center gap-1.5 text-xs ${isOptimized ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+            }`}>
             {isOptimized ? <Zap className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
             <span className="font-medium">{latency}ms</span>
           </div>
@@ -94,8 +96,10 @@ export default function PlaygroundPage() {
     ? Math.round((1 - result.optimized.latency / result.original.latency) * 100)
     : null;
 
+  const activeJobId = selectedJobId !== "latest" ? selectedJobId : completedJobs[0]?.id;
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full overflow-auto">
       <div className="px-6 py-4 border-b border-border">
         <h1 className="text-sm font-medium text-foreground">Playground</h1>
         <p className="text-xs text-muted-foreground mt-0.5">
@@ -103,7 +107,8 @@ export default function PlaygroundPage() {
         </p>
       </div>
 
-      <div className="flex-1 flex flex-col p-6 gap-4 overflow-hidden">
+      <div className="p-6 space-y-6">
+        {/* Inference Controls */}
         <div className="flex items-end gap-4">
           <div className="flex-1">
             <label className="text-xs text-muted-foreground mb-2 block">
@@ -170,7 +175,8 @@ export default function PlaygroundPage() {
           </div>
         )}
 
-        <div className="flex-1 flex gap-4 min-h-0">
+        {/* Output Panels */}
+        <div className="flex gap-4 h-64">
           <OutputPanel
             title="Original Model"
             output={result?.original.output || ""}
@@ -185,7 +191,18 @@ export default function PlaygroundPage() {
             isLoading={inferenceMutation.isPending}
           />
         </div>
+
+        {/* Stress Testing Section */}
+        <div className="pt-4 border-t border-border">
+          <h2 className="text-sm font-medium text-foreground mb-4">Stress Testing</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <DriftSimulator jobId={activeJobId} />
+            <MemoryStressTest jobId={activeJobId} />
+            <ThroughputBenchmark jobId={activeJobId} />
+          </div>
+        </div>
       </div>
     </div>
   );
 }
+

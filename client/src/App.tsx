@@ -22,6 +22,8 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
 import RegistryPage from "@/pages/registry";
+import ComparePage from "@/pages/compare";
+import InsightsPage from "@/pages/insights";
 import { Loader2 } from "lucide-react";
 
 function getBreadcrumbs(path: string): { label: string }[] {
@@ -34,6 +36,8 @@ function getBreadcrumbs(path: string): { label: string }[] {
   }
   if (path === "/playground") return [{ label: "Playground" }];
   if (path === "/deploy") return [{ label: "Deployment" }];
+  if (path === "/compare") return [{ label: "Compare" }];
+  if (path === "/insights") return [{ label: "Insights" }];
   return [];
 }
 
@@ -49,6 +53,8 @@ function ProtectedRouter() {
       <Route path="/settings" component={SettingsPage} />
       <Route path="/analysis" component={AnalysisPage} />
       <Route path="/deploy" component={DeployPage} />
+      <Route path="/compare" component={ComparePage} />
+      <Route path="/insights" component={InsightsPage} />
       <Route component={NotFound} />
     </Switch>
   );

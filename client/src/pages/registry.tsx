@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Database, Calendar, HardDrive, Zap, TrendingDown, FileUp, ExternalLink } from "lucide-react";
+import { Database, Calendar, HardDrive, Zap, TrendingDown, FileUp, ExternalLink, Info, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,15 +14,26 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetDescription,
+} from "@/components/ui/sheet";
+import { NutritionLabel } from "@/components/business/NutritionLabel";
 import type { Job } from "@shared/schema";
 
 export default function RegistryPage() {
+    const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
     const { data: jobs, isLoading } = useQuery<Job[]>({
         queryKey: ["/api/jobs"],
     });
 
     // Filter only completed jobs as "registered" models
     const completedJobs = jobs?.filter(job => job.status === "completed") || [];
+    const selectedJob = completedJobs.find(j => j.id === selectedJobId);
 
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString("en-US", {
@@ -138,12 +149,16 @@ export default function RegistryPage() {
                                     <TableHead>Performance</TableHead>
                                     <TableHead>Size</TableHead>
                                     <TableHead>Optimized</TableHead>
-                                    <TableHead className="w-12"></TableHead>
+                                    <TableHead className="w-24"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {completedJobs.map((job) => (
-                                    <TableRow key={job.id}>
+                                    <TableRow
+                                        key={job.id}
+                                        className="cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                                        onClick={() => setSelectedJobId(job.id)}
+                                    >
                                         <TableCell>
                                             <div>
                                                 <div className="font-medium">{job.fileName}</div>
@@ -196,11 +211,29 @@ export default function RegistryPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <Link href={`/jobs/${job.id}`}>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                    <ExternalLink className="h-4 w-4" />
+                                            <div className="flex items-center gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedJobId(job.id);
+                                                    }}
+                                                >
+                                                    <Info className="h-4 w-4" />
                                                 </Button>
-                                            </Link>
+                                                <Link href={`/jobs/${job.id}`}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        <ExternalLink className="h-4 w-4" />
+                                                    </Button>
+                                                </Link>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -209,6 +242,22 @@ export default function RegistryPage() {
                     )}
                 </Card>
             </div>
+
+            {/* Nutrition Label Sheet */}
+            <Sheet open={!!selectedJobId} onOpenChange={(open) => !open && setSelectedJobId(null)}>
+                <SheetContent className="overflow-auto">
+                    <SheetHeader className="mb-6">
+                        <SheetTitle>Model Details</SheetTitle>
+                        <SheetDescription>
+                            AI Bill of Materials and compliance information
+                        </SheetDescription>
+                    </SheetHeader>
+                    {selectedJobId && (
+                        <NutritionLabel jobId={selectedJobId} />
+                    )}
+                </SheetContent>
+            </Sheet>
         </div>
     );
 }
+
