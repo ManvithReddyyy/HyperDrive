@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useLocation } from "wouter";
-import { Upload, FileUp, Zap, Cpu, Target } from "lucide-react";
+import { Upload, FileUp, Zap, Cpu, Target, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -24,7 +24,9 @@ export default function UploadPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
+  const [calibrationFile, setCalibrationFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isCalibrationDragging, setIsCalibrationDragging] = useState(false);
   const [config, setConfig] = useState<OptimizationConfig>({
     quantization: "INT8",
     targetDevice: "NVIDIA A100",
@@ -83,6 +85,32 @@ export default function UploadPage() {
     }
   }, []);
 
+  const handleCalibrationFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile && selectedFile.name.endsWith('.jsonl')) {
+      setCalibrationFile(selectedFile);
+    }
+  }, []);
+
+  const handleCalibrationDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsCalibrationDragging(true);
+  }, []);
+
+  const handleCalibrationDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsCalibrationDragging(false);
+  }, []);
+
+  const handleCalibrationDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsCalibrationDragging(false);
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile && droppedFile.name.endsWith('.jsonl')) {
+      setCalibrationFile(droppedFile);
+    }
+  }, []);
+
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -94,13 +122,12 @@ export default function UploadPage() {
     <div className="flex h-full">
       <div className="flex-1 p-6 flex flex-col gap-6">
         <div
-          className={`flex-1 flex flex-col items-center justify-center rounded-md border-2 border-dashed transition-colors ${
-            isDragging
-              ? "border-foreground bg-muted/50"
-              : file
+          className={`flex-1 flex flex-col items-center justify-center rounded-md border-2 border-dashed transition-colors ${isDragging
+            ? "border-foreground bg-muted/50"
+            : file
               ? "border-foreground/30 bg-card"
               : "border-border bg-card"
-          }`}
+            }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -156,11 +183,70 @@ export default function UploadPage() {
             </div>
           )}
         </div>
+
+        {/* Calibration Dataset Dropzone */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+            Calibration Dataset (Optional)
+            <div className="group relative">
+              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-popover border border-border rounded-md shadow-lg z-10">
+                <p className="text-xs text-foreground">
+                  Adding a calibration dataset (.jsonl) improves INT8 quantization accuracy by providing representative input samples for activation range estimation.
+                </p>
+              </div>
+            </div>
+          </label>
+          <div
+            className={`flex flex-col items-center justify-center rounded-md border-2 border-dashed py-6 px-4 transition-colors ${isCalibrationDragging
+              ? "border-foreground bg-muted/50"
+              : calibrationFile
+                ? "border-foreground/30 bg-card"
+                : "border-border bg-card"
+              }`}
+            onDragOver={handleCalibrationDragOver}
+            onDragLeave={handleCalibrationDragLeave}
+            onDrop={handleCalibrationDrop}
+          >
+            {calibrationFile ? (
+              <div className="flex flex-col items-center gap-2">
+                <FileUp className="h-5 w-5 text-foreground" />
+                <div className="text-center">
+                  <p className="text-sm font-medium text-foreground">{calibrationFile.name}</p>
+                  <p className="text-xs text-muted-foreground">{formatFileSize(calibrationFile.size)}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCalibrationFile(null)}
+                >
+                  Remove
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3">
+                <Upload className="h-5 w-5 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Drop .jsonl file here</p>
+                <label>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".jsonl"
+                    onChange={handleCalibrationFileSelect}
+                  />
+                  <Button variant="secondary" size="sm" asChild>
+                    <span>Browse</span>
+                  </Button>
+                </label>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="w-80 border-l border-border bg-card p-6">
         <h3 className="text-sm font-medium text-foreground mb-6">Properties</h3>
-        
+
         <div className="space-y-5">
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Plus, History, FlaskConical, Rocket } from "lucide-react";
+import { Plus, History, FlaskConical, Rocket, BarChart3, Database } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -24,9 +24,19 @@ const navItems = [
     icon: History,
   },
   {
+    title: "Model Registry",
+    url: "/registry",
+    icon: Database,
+  },
+  {
     title: "Playground",
     url: "/playground",
     icon: FlaskConical,
+  },
+  {
+    title: "Analysis",
+    url: "/analysis",
+    icon: BarChart3,
   },
   {
     title: "Deployment",
@@ -55,12 +65,12 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
-                const isActive = location === item.url || 
+                const isActive = location === item.url ||
                   (item.url === "/jobs" && location.startsWith("/jobs/"));
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
+                    <SidebarMenuButton
+                      asChild
                       isActive={isActive}
                       data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                     >

@@ -35,14 +35,14 @@ function JobRow({ job }: { job: Job }) {
 
   return (
     <Link href={`/jobs/${job.id}`}>
-      <div 
+      <div
         className="flex items-center gap-4 px-4 py-3 border-b border-border hover-elevate active-elevate-2 cursor-pointer"
         data-testid={`job-row-${job.id}`}
       >
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted">
           <FileUp className="h-4 w-4 text-muted-foreground" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-foreground truncate">
@@ -73,7 +73,7 @@ function JobRow({ job }: { job: Job }) {
               </span>
             </div>
           )}
-          
+
           <Badge variant="secondary" className={`${status.className} gap-1`}>
             <StatusIcon className={`h-3 w-3 ${isRunning ? "animate-spin" : ""}`} />
             <span className="text-xs">{status.label}</span>
@@ -107,6 +107,7 @@ function JobSkeleton() {
 export default function JobsPage() {
   const { data: jobs, isLoading } = useQuery<Job[]>({
     queryKey: ["/api/jobs"],
+    refetchInterval: 5000, // Refresh every 5 seconds
   });
 
   return (

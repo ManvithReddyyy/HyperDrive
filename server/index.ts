@@ -1,7 +1,11 @@
+import "dotenv/config";
+console.log("!!! SERVER RESTARTING - NEW CODE LOADED !!!");
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { setupAuth } from "./auth";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { jobProcessor } from "./job-processor";
 
 const app = express();
 const httpServer = createServer(app);
@@ -60,7 +64,11 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  setupAuth(app);
   await registerRoutes(httpServer, app);
+
+  // Start job processor
+  jobProcessor.start();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getQueryFn } from "@/lib/queryClient";
 import type { InferenceResult, Job } from "@shared/schema";
 
 function OutputPanel({ 
@@ -61,11 +61,12 @@ function OutputPanel({
 
 export default function PlaygroundPage() {
   const [prompt, setPrompt] = useState("");
-  const [selectedJobId, setSelectedJobId] = useState<string>("");
+  const [selectedJobId, setSelectedJobId] = useState<string>("latest");
   const [result, setResult] = useState<InferenceResult | null>(null);
 
   const { data: jobs } = useQuery<Job[]>({
     queryKey: ["/api/jobs"],
+    queryFn: getQueryFn({ on401: "throw" }),
   });
 
   const completedJobs = jobs?.filter(j => j.status === "completed") || [];
@@ -74,7 +75,7 @@ export default function PlaygroundPage() {
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/inference/compare", {
         prompt,
-        jobId: selectedJobId || undefined,
+        jobId: selectedJobId === "latest" ? undefined : selectedJobId,
       });
       return await response.json() as InferenceResult;
     },
@@ -127,7 +128,7 @@ export default function PlaygroundPage() {
                     <SelectValue placeholder="Latest model" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Latest model</SelectItem>
+                    <SelectItem value="latest">Latest model</SelectItem>
                     {completedJobs.map((job) => (
                       <SelectItem key={job.id} value={job.id}>
                         {job.fileName.slice(0, 20)}...
