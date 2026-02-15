@@ -7,6 +7,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import NotFound from "@/pages/not-found";
@@ -24,6 +25,7 @@ import SignupPage from "@/pages/signup";
 import RegistryPage from "@/pages/registry";
 import ComparePage from "@/pages/compare";
 import InsightsPage from "@/pages/insights";
+import TeamsPage from "@/pages/teams";
 import { Loader2 } from "lucide-react";
 
 function getBreadcrumbs(path: string): { label: string }[] {
@@ -38,6 +40,8 @@ function getBreadcrumbs(path: string): { label: string }[] {
   if (path === "/deploy") return [{ label: "Deployment" }];
   if (path === "/compare") return [{ label: "Compare" }];
   if (path === "/insights") return [{ label: "Insights" }];
+  if (path === "/teams") return [{ label: "Teams" }];
+  if (path === "/settings") return [{ label: "Settings" }];
   return [];
 }
 
@@ -55,6 +59,7 @@ function ProtectedRouter() {
       <Route path="/deploy" component={DeployPage} />
       <Route path="/compare" component={ComparePage} />
       <Route path="/insights" component={InsightsPage} />
+      <Route path="/teams" component={TeamsPage} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -89,14 +94,25 @@ function MainLayout() {
           <ProtectedRouter />
         </main>
       </div>
+      <KeyboardShortcuts />
     </div>
   );
 }
 
+
 function AppContent() {
   const { user, isLoading } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
 
+  // AUTH DISABLED - Remove this block when re-enabling authentication
+  // Skip all auth checks and show main layout directly
+  return (
+    <SidebarProvider style={{ "--sidebar-width": "15rem", "--sidebar-width-icon": "3rem" } as React.CSSProperties}>
+      <MainLayout />
+    </SidebarProvider>
+  );
+
+  /* ORIGINAL AUTH CODE - Uncomment when re-enabling authentication
   // Show loading spinner while checking auth
   if (isLoading) {
     return (
@@ -108,6 +124,11 @@ function AppContent() {
 
   // Auth pages - no sidebar
   if (location === "/login" || location === "/signup") {
+    // If user is already logged in, redirect to home
+    if (user) {
+      setLocation("/");
+      return null;
+    }
     return (
       <Switch>
         <Route path="/login" component={LoginPage} />
@@ -127,6 +148,7 @@ function AppContent() {
       <MainLayout />
     </SidebarProvider>
   );
+  */
 }
 
 function App() {

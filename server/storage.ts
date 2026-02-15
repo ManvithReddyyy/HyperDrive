@@ -1,2 +1,3 @@
-// Re-export Supabase storage as the default storage
-export { SupabaseStorage as MemStorage, storage, type IStorage } from "./storage-supabase";
+// In-memory storage for local development (no Supabase needed)
+export { MemoryStorage as MemStorage, storage } from "./storage-memory";
+export type { IStorage } from "./storage-supabase";

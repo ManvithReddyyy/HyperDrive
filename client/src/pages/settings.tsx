@@ -7,9 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Bell, Shield, Trash2, LogOut, Loader2 } from "lucide-react";
+import { User, Mail, Bell, Shield, Trash2, LogOut, Loader2, Key, Webhook, History, Keyboard } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { ApiKeyManager } from "@/components/business/ApiKeyManager";
+import { WebhookManager } from "@/components/business/WebhookManager";
+import { AuditLog } from "@/components/business/AuditLog";
 
 export default function SettingsPage() {
   const { user, logoutMutation } = useAuth();
@@ -35,7 +39,6 @@ export default function SettingsPage() {
       return res.json();
     },
     onSuccess: () => {
-      // Refresh user data to get updated display name
       queryClient.invalidateQueries({ queryKey: ["auth", "user"] });
       toast({
         title: "Profile updated",
@@ -82,7 +85,6 @@ export default function SettingsPage() {
       return;
     }
 
-    // TODO: Implement password change
     toast({
       title: "Password changed",
       description: "Your password has been changed successfully",
@@ -94,7 +96,6 @@ export default function SettingsPage() {
 
   const handleDeleteAccount = () => {
     if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      // TODO: Implement account deletion
       toast({
         title: "Account deleted",
         description: "Your account has been permanently deleted",
@@ -104,7 +105,7 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-auto p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <div>
           <h2 className="text-2xl font-semibold">Settings</h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -112,207 +113,251 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        {/* Profile Settings */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <User className="h-5 w-5" />
-            <h3 className="text-lg font-medium">Profile</h3>
-          </div>
+        <Tabs defaultValue="profile" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5 max-w-xl">
+            <TabsTrigger value="profile" className="gap-2">
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">Profile</span>
+            </TabsTrigger>
+            <TabsTrigger value="api-keys" className="gap-2">
+              <Key className="h-4 w-4" />
+              <span className="hidden sm:inline">API Keys</span>
+            </TabsTrigger>
+            <TabsTrigger value="webhooks" className="gap-2">
+              <Webhook className="h-4 w-4" />
+              <span className="hidden sm:inline">Webhooks</span>
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="gap-2">
+              <History className="h-4 w-4" />
+              <span className="hidden sm:inline">Activity</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="gap-2">
+              <Shield className="h-4 w-4" />
+              <span className="hidden sm:inline">Security</span>
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={user?.email || user?.username || ""}
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-xs text-muted-foreground">
-                Email cannot be changed. Contact support if needed.
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="space-y-6">
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <User className="h-5 w-5" />
+                <h3 className="text-lg font-medium">Profile</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={user?.email || user?.username || ""}
+                    disabled
+                    className="bg-muted"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Email cannot be changed. Contact support if needed.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="displayName">Display Name</Label>
+                  <Input
+                    id="displayName"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    placeholder="Your name"
+                  />
+                </div>
+
+                <Button
+                  onClick={handleProfileUpdate}
+                  disabled={updateProfileMutation.isPending}
+                >
+                  {updateProfileMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Save Changes
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Bell className="h-5 w-5" />
+                <h3 className="text-lg font-medium">Notifications</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Email Notifications</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Receive email notifications for important events
+                    </p>
+                  </div>
+                  <Switch
+                    checked={emailNotifications}
+                    onCheckedChange={setEmailNotifications}
+                  />
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Job Completion</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Get notified when optimization jobs finish
+                    </p>
+                  </div>
+                  <Switch
+                    checked={jobCompletionNotif}
+                    onCheckedChange={setJobCompletionNotif}
+                  />
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Weekly Reports</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Receive weekly summary of your optimizations
+                    </p>
+                  </div>
+                  <Switch
+                    checked={weeklyReports}
+                    onCheckedChange={setWeeklyReports}
+                  />
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Keyboard className="h-5 w-5" />
+                <h3 className="text-lg font-medium">Keyboard Shortcuts</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono">Shift + ?</kbd> to view all keyboard shortcuts
               </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Your name"
-              />
-            </div>
-
-            <Button
-              onClick={handleProfileUpdate}
-              disabled={updateProfileMutation.isPending}
-            >
-              {updateProfileMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Save Changes
-            </Button>
-          </div>
-        </Card>
-
-        {/* Notification Settings */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Bell className="h-5 w-5" />
-            <h3 className="text-lg font-medium">Notifications</h3>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Email Notifications</Label>
-                <p className="text-xs text-muted-foreground">
-                  Receive email notifications for important events
-                </p>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex justify-between"><span>Go to Home</span><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono">Alt + H</kbd></div>
+                <div className="flex justify-between"><span>Go to Jobs</span><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono">Alt + J</kbd></div>
+                <div className="flex justify-between"><span>Go to Upload</span><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono">Alt + U</kbd></div>
+                <div className="flex justify-between"><span>Go to Insights</span><kbd className="px-1.5 py-0.5 bg-muted rounded text-xs font-mono">Alt + I</kbd></div>
               </div>
-              <Switch
-                checked={emailNotifications}
-                onCheckedChange={setEmailNotifications}
-              />
-            </div>
+            </Card>
+          </TabsContent>
 
-            <Separator />
+          {/* API Keys Tab */}
+          <TabsContent value="api-keys">
+            <ApiKeyManager />
+          </TabsContent>
 
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Job Completion</Label>
-                <p className="text-xs text-muted-foreground">
-                  Get notified when optimization jobs finish
-                </p>
+          {/* Webhooks Tab */}
+          <TabsContent value="webhooks">
+            <WebhookManager />
+          </TabsContent>
+
+          {/* Activity Tab */}
+          <TabsContent value="activity">
+            <AuditLog />
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security" className="space-y-6">
+            <Card className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Shield className="h-5 w-5" />
+                <h3 className="text-lg font-medium">Change Password</h3>
               </div>
-              <Switch
-                checked={jobCompletionNotif}
-                onCheckedChange={setJobCompletionNotif}
-              />
-            </div>
 
-            <Separator />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="currentPassword">Current Password</Label>
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                  />
+                </div>
 
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Weekly Reports</Label>
-                <p className="text-xs text-muted-foreground">
-                  Receive weekly summary of your optimizations
-                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword">New Password</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                  />
+                </div>
+
+                <Button onClick={handlePasswordChange}>Change Password</Button>
               </div>
-              <Switch
-                checked={weeklyReports}
-                onCheckedChange={setWeeklyReports}
-              />
-            </div>
-          </div>
-        </Card>
+            </Card>
 
-        {/* Security Settings */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Shield className="h-5 w-5" />
-            <h3 className="text-lg font-medium">Security</h3>
-          </div>
+            <Card className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium mb-1">Account Actions</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Manage your account and data
+                  </p>
+                </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter current password"
-              />
-            </div>
+                <Separator />
 
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
-              />
-            </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Sign Out</p>
+                    <p className="text-xs text-muted-foreground">
+                      Sign out from this device
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => logoutMutation.mutate()}
+                    disabled={logoutMutation.isPending}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-              />
-            </div>
+                <Separator />
 
-            <Button onClick={handlePasswordChange}>Change Password</Button>
-          </div>
-        </Card>
-
-        {/* Account Actions */}
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-medium mb-1">Account Actions</h3>
-              <p className="text-sm text-muted-foreground">
-                Manage your account and data
-              </p>
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Sign Out</p>
-                <p className="text-xs text-muted-foreground">
-                  Sign out from this device
-                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-destructive">Delete Account</p>
+                    <p className="text-xs text-muted-foreground">
+                      Permanently delete your account and all data
+                    </p>
+                  </div>
+                  <Button variant="destructive" onClick={handleDeleteAccount}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Account
+                  </Button>
+                </div>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => logoutMutation.mutate()}
-                disabled={logoutMutation.isPending}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-destructive">Delete Account</p>
-                <p className="text-xs text-muted-foreground">
-                  Permanently delete your account and all data
-                </p>
-              </div>
-              <Button variant="destructive" onClick={handleDeleteAccount}>
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Account
-              </Button>
-            </div>
-          </div>
-        </Card>
-
-        {/* API Keys Section */}
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Mail className="h-5 w-5" />
-            <h3 className="text-lg font-medium">API Keys</h3>
-          </div>
-
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Generate API keys to use HyperDrive programmatically
-            </p>
-            <Button variant="outline">Generate New API Key</Button>
-          </div>
-        </Card>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
 }
+

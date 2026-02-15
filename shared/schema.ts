@@ -181,11 +181,232 @@ export const deploymentCodeSchema = z.object({
 
 export type DeploymentCode = z.infer<typeof deploymentCodeSchema>;
 
+// ================== Job Templates ==================
+export const jobTemplateSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  config: optimizationConfigSchema,
+  userId: z.string(),
+  isPublic: z.boolean().default(false),
+  usageCount: z.number().default(0),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type JobTemplate = z.infer<typeof jobTemplateSchema>;
+
+export const createJobTemplateSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  config: optimizationConfigSchema,
+  isPublic: z.boolean().default(false),
+});
+
+export type CreateJobTemplate = z.infer<typeof createJobTemplateSchema>;
+
+// ================== Batch Jobs ==================
+export const jobBatchSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  jobIds: z.array(z.string()),
+  status: z.enum(["pending", "running", "completed", "failed", "partial"]),
+  totalJobs: z.number(),
+  completedJobs: z.number(),
+  failedJobs: z.number(),
+  userId: z.string(),
+  createdAt: z.string(),
+  completedAt: z.string().optional(),
+});
+
+export type JobBatch = z.infer<typeof jobBatchSchema>;
+
+export const createJobBatchSchema = z.object({
+  name: z.string(),
+  files: z.array(z.object({
+    fileName: z.string(),
+    fileSize: z.number(),
+  })),
+  config: optimizationConfigSchema,
+});
+
+export type CreateJobBatch = z.infer<typeof createJobBatchSchema>;
+
+// ================== Job Scheduling ==================
+export const jobScheduleSchema = z.object({
+  id: z.string(),
+  jobData: createJobSchema,
+  scheduledFor: z.string(), // ISO datetime
+  status: z.enum(["scheduled", "triggered", "cancelled"]),
+  userId: z.string(),
+  createdAt: z.string(),
+  triggeredAt: z.string().optional(),
+  resultJobId: z.string().optional(),
+});
+
+export type JobSchedule = z.infer<typeof jobScheduleSchema>;
+
+// ================== Job Versions ==================
+export const jobVersionSchema = z.object({
+  id: z.string(),
+  originalJobId: z.string(),
+  version: z.number(),
+  jobId: z.string(), // References the actual job
+  createdAt: z.string(),
+  notes: z.string().optional(),
+});
+
+export type JobVersion = z.infer<typeof jobVersionSchema>;
+
+// ================== Teams & Collaboration ==================
+export const teamRoleOptions = ["owner", "admin", "editor", "viewer"] as const;
+
+export const teamSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().optional(),
+  ownerId: z.string(),
+  createdAt: z.string(),
+});
+
+export type Team = z.infer<typeof teamSchema>;
+
+export const teamMemberSchema = z.object({
+  id: z.string(),
+  teamId: z.string(),
+  userId: z.string(),
+  role: z.enum(teamRoleOptions),
+  joinedAt: z.string(),
+});
+
+export type TeamMember = z.infer<typeof teamMemberSchema>;
+
+// ================== Comments ==================
+export const commentSchema = z.object({
+  id: z.string(),
+  jobId: z.string(),
+  userId: z.string(),
+  username: z.string(),
+  content: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string().optional(),
+});
+
+export type Comment = z.infer<typeof commentSchema>;
+
+// ================== Audit Log ==================
+export const auditActionOptions = [
+  "job.create", "job.delete", "job.update",
+  "template.create", "template.delete",
+  "team.create", "team.invite", "team.remove",
+  "settings.update", "webhook.trigger",
+  "apikey.create", "apikey.revoke",
+] as const;
+
+export const auditLogSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  username: z.string(),
+  action: z.enum(auditActionOptions),
+  resourceType: z.string(),
+  resourceId: z.string(),
+  details: z.record(z.any()).optional(),
+  ipAddress: z.string().optional(),
+  timestamp: z.string(),
+});
+
+export type AuditLog = z.infer<typeof auditLogSchema>;
+
+// ================== Webhooks ==================
+export const webhookEventOptions = [
+  "job.completed", "job.failed", "batch.completed",
+  "alert.triggered", "drift.detected",
+] as const;
+
+export const webhookSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  url: z.string().url(),
+  events: z.array(z.enum(webhookEventOptions)),
+  secret: z.string().optional(),
+  isActive: z.boolean().default(true),
+  userId: z.string(),
+  lastTriggeredAt: z.string().optional(),
+  createdAt: z.string(),
+});
+
+export type Webhook = z.infer<typeof webhookSchema>;
+
+export const createWebhookSchema = z.object({
+  name: z.string().min(1),
+  url: z.string().url(),
+  events: z.array(z.enum(webhookEventOptions)).min(1),
+  secret: z.string().optional(),
+});
+
+export type CreateWebhook = z.infer<typeof createWebhookSchema>;
+
+// ================== API Keys ==================
+export const apiKeySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  keyPrefix: z.string(), // First 8 chars for display
+  keyHash: z.string(), // Hashed full key
+  scopes: z.array(z.string()),
+  expiresAt: z.string().optional(),
+  lastUsedAt: z.string().optional(),
+  userId: z.string(),
+  createdAt: z.string(),
+});
+
+export type ApiKey = z.infer<typeof apiKeySchema>;
+
+export const createApiKeySchema = z.object({
+  name: z.string().min(1),
+  scopes: z.array(z.string()).default(["read", "write"]),
+  expiresInDays: z.number().optional(),
+});
+
+export type CreateApiKey = z.infer<typeof createApiKeySchema>;
+
+// ================== Alerts ==================
+export const alertConditionOptions = [
+  "latency_above", "error_rate_above", "throughput_below",
+  "drift_detected", "accuracy_below",
+] as const;
+
+export const alertSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  condition: z.enum(alertConditionOptions),
+  threshold: z.number(),
+  jobId: z.string().optional(),
+  isActive: z.boolean().default(true),
+  userId: z.string(),
+  lastTriggeredAt: z.string().optional(),
+  createdAt: z.string(),
+});
+
+export type Alert = z.infer<typeof alertSchema>;
+
+// ================== Cost Estimation ==================
+export const costEstimateSchema = z.object({
+  hardware: z.string(),
+  hoursPerDay: z.number(),
+  daysPerMonth: z.number(),
+  estimatedTokens: z.number(),
+  monthlyCost: z.number(),
+  costPerMillionTokens: z.number(),
+});
+
+export type CostEstimate = z.infer<typeof costEstimateSchema>;
+
+// ================== Users ==================
 export const users = {} as any;
 export const insertUserSchema = z.object({
   username: z.string(),
   password: z.string(),
 });
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = { id: string; username: string; email?: string; password: string };
+export type User = { id: string; username: string; email?: string; password: string; teamId?: string; role?: string };
 

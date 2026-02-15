@@ -207,8 +207,8 @@ export function ModelComparison() {
                 <>
                     {/* Winner Banner */}
                     <Card className={`p-6 text-center ${comparison.comparison.winner === "tie"
-                            ? "bg-zinc-100 dark:bg-zinc-800"
-                            : "bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-950/40 dark:to-emerald-950/40 border-green-300"
+                        ? "bg-zinc-100 dark:bg-zinc-800"
+                        : "bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-950/40 dark:to-emerald-950/40 border-green-300"
                         }`}>
                         <div className="flex items-center justify-center gap-3">
                             {comparison.comparison.winner === "tie" ? (
@@ -301,8 +301,8 @@ export function ModelComparison() {
 
                         <MetricCard
                             label="Optimized Size"
-                            value1={formatBytes(comparison.job1.optimizedSize || 0)}
-                            value2={formatBytes(comparison.job2.optimizedSize || 0)}
+                            value1={comparison.job1.sizeReduction ? `${comparison.job1.sizeReduction}%` : "N/A"}
+                            value2={comparison.job2.sizeReduction ? `${comparison.job2.sizeReduction}%` : "N/A"}
                             lowerIsBetter
                             icon={HardDrive}
                         />

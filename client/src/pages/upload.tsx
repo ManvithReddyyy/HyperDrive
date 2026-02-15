@@ -28,7 +28,7 @@ export default function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [isCalibrationDragging, setIsCalibrationDragging] = useState(false);
   const [config, setConfig] = useState<OptimizationConfig>({
-    quantization: "INT8",
+    quantization: "INT8 Dynamic",
     targetDevice: "NVIDIA A100",
     strategy: "Latency Focus",
   });

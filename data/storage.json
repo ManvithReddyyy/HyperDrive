@@ -1,0 +1,146 @@
+{
+  "jobs": {
+    "2e22f6ba-0b8a-4489-9597-226389795a2e": {
+      "id": "2e22f6ba-0b8a-4489-9597-226389795a2e",
+      "fileName": "dummy.pt",
+      "fileSize": 529141257,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "Google TPU v5e",
+        "strategy": "Production Ready"
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | Google TPU v5e | Production Ready",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 545399,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1008
+        },
+        {
+          "id": 968197,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 802
+        },
+        {
+          "id": 220394,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 512
+        },
+        {
+          "id": 95167,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2004
+        },
+        {
+          "id": 984152,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3002
+        },
+        {
+          "id": 68198,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2008
+        }
+      ],
+      "originalLatency": 139,
+      "optimizedLatency": 22,
+      "sizeReduction": 68,
+      "createdAt": "2026-02-15T12:47:01.875Z",
+      "completedAt": "2026-02-15T12:47:14.773Z"
+    },
+    "00bdfc1a-6c3a-43d4-9f54-39bd5efe76de": {
+      "id": "00bdfc1a-6c3a-43d4-9f54-39bd5efe76de",
+      "fileName": "dummy.pt",
+      "fileSize": 529141257,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA A100",
+        "strategy": "Latency Focus"
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 494156,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1014
+        },
+        {
+          "id": 927659,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 814
+        },
+        {
+          "id": 641023,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 509
+        },
+        {
+          "id": 807653,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2005
+        },
+        {
+          "id": 92973,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3013
+        },
+        {
+          "id": 336614,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2003
+        }
+      ],
+      "originalLatency": 130,
+      "optimizedLatency": 55,
+      "sizeReduction": 38,
+      "createdAt": "2026-02-15T13:01:09.580Z",
+      "completedAt": "2026-02-15T13:01:20.157Z"
+    }
+  },
+  "users": {},
+  "templates": {},
+  "webhooks": {},
+  "apiKeys": {},
+  "teams": {},
+  "teamMembers": [],
+  "comments": [],
+  "auditLogs": [],
+  "alerts": {},
+  "batches": {}
+}

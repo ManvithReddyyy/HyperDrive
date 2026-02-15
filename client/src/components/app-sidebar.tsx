@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Plus, History, FlaskConical, Rocket, BarChart3, Database, Zap, Scale, Sparkles } from "lucide-react";
+import { Plus, History, FlaskConical, Rocket, BarChart3, Database, Zap, Scale, Sparkles, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +37,11 @@ const navItems = [
     title: "Insights",
     url: "/insights",
     icon: Sparkles,
+  },
+  {
+    title: "Teams",
+    url: "/teams",
+    icon: Users,
   },
   {
     title: "Playground",
