@@ -15,7 +15,7 @@
  *   npx hyperdrive list
  *   npx hyperdrive status abc123
  */
-
+//
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
