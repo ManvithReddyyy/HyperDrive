@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Copy, Check, Code, Server, Container, FileCode } from "lucide-react";
+import { Copy, Check, Code, Server, Container, FileCode, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -87,19 +87,43 @@ export default function DeployPage() {
           </div>
           
           {completedJobs.length > 0 && (
-            <div className="w-64">
-              <Select value={activeJobId} onValueChange={setSelectedJobId}>
-                <SelectTrigger data-testid="select-job">
-                  <SelectValue placeholder="Select a model" />
-                </SelectTrigger>
-                <SelectContent>
-                  {completedJobs.map((job) => (
-                    <SelectItem key={job.id} value={job.id}>
-                      {job.fileName} (#{job.id.slice(0, 6)})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-3">
+              <div className="w-64">
+                <Select value={activeJobId} onValueChange={setSelectedJobId}>
+                  <SelectTrigger data-testid="select-job">
+                    <SelectValue placeholder="Select a model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {completedJobs.map((job) => (
+                      <SelectItem key={job.id} value={job.id}>
+                        {job.fileName} (#{job.id.slice(0, 6)})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {selectedJob && (
+                <div className="flex items-center gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="gap-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                    onClick={() => window.open(`/api/jobs/${selectedJob.id}/download?format=pt`, '_blank')}
+                  >
+                    <Download className="h-4 w-4" />
+                    .pt
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => window.open(`/api/jobs/${selectedJob.id}/download`, '_blank')}
+                  >
+                    <Download className="h-4 w-4" />
+                    .onnx
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>

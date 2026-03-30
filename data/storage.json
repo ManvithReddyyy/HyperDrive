@@ -1,80 +1,18 @@
 {
   "jobs": {
-    "2e22f6ba-0b8a-4489-9597-226389795a2e": {
-      "id": "2e22f6ba-0b8a-4489-9597-226389795a2e",
-      "fileName": "dummy.pt",
-      "fileSize": 529141257,
-      "status": "completed",
-      "config": {
-        "quantization": "INT8 Dynamic",
-        "targetDevice": "Google TPU v5e",
-        "strategy": "Production Ready"
-      },
-      "progress": 100,
-      "logs": [
-        "Job started. Initializing optimization pipeline...",
-        "Loading model architecture and weights...",
-        "Validating model graph compatibility...",
-        "Configuration: INT8 Dynamic | Google TPU v5e | Production Ready",
-        "Connecting to ML optimization service...",
-        "Fusing layers and optimizing operations...",
-        "Applying INT8 Dynamic quantization...",
-        "Running performance benchmarks on target device...",
-        "Optimization completed successfully."
-      ],
-      "pipelineSteps": [
-        {
-          "id": 545399,
-          "name": "Model Loading",
-          "status": "completed",
-          "duration": 1008
-        },
-        {
-          "id": 968197,
-          "name": "Validation",
-          "status": "completed",
-          "duration": 802
-        },
-        {
-          "id": 220394,
-          "name": "Python Backend",
-          "status": "completed",
-          "duration": 512
-        },
-        {
-          "id": 95167,
-          "name": "Graph Optimization",
-          "status": "completed",
-          "duration": 2004
-        },
-        {
-          "id": 984152,
-          "name": "Quantization",
-          "status": "completed",
-          "duration": 3002
-        },
-        {
-          "id": 68198,
-          "name": "Benchmarking",
-          "status": "completed",
-          "duration": 2008
-        }
-      ],
-      "originalLatency": 139,
-      "optimizedLatency": 22,
-      "sizeReduction": 68,
-      "createdAt": "2026-02-15T12:47:01.875Z",
-      "completedAt": "2026-02-15T12:47:14.773Z"
-    },
-    "00bdfc1a-6c3a-43d4-9f54-39bd5efe76de": {
-      "id": "00bdfc1a-6c3a-43d4-9f54-39bd5efe76de",
+    "d151115a-a9a5-409a-bf66-a6e766991308": {
+      "id": "d151115a-a9a5-409a-bf66-a6e766991308",
       "fileName": "dummy.pt",
       "fileSize": 529141257,
       "status": "completed",
       "config": {
         "quantization": "INT8 Dynamic",
         "targetDevice": "NVIDIA A100",
-        "strategy": "Latency Focus"
+        "strategy": "Latency Focus",
+        "pruning": "2:4 Structured Sparsity",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
       },
       "progress": 100,
       "logs": [
@@ -90,57 +28,437 @@
       ],
       "pipelineSteps": [
         {
-          "id": 494156,
+          "id": 906500,
           "name": "Model Loading",
           "status": "completed",
-          "duration": 1014
+          "duration": 1015
         },
         {
-          "id": 927659,
+          "id": 980112,
           "name": "Validation",
           "status": "completed",
-          "duration": 814
+          "duration": 813
         },
         {
-          "id": 641023,
+          "id": 401257,
           "name": "Python Backend",
           "status": "completed",
-          "duration": 509
+          "duration": 514
         },
         {
-          "id": 807653,
+          "id": 572249,
           "name": "Graph Optimization",
           "status": "completed",
-          "duration": 2005
+          "duration": 2017
         },
         {
-          "id": 92973,
+          "id": 580231,
           "name": "Quantization",
           "status": "completed",
-          "duration": 3013
+          "duration": 3011
         },
         {
-          "id": 336614,
+          "id": 283245,
           "name": "Benchmarking",
           "status": "completed",
-          "duration": 2003
+          "duration": 2014
         }
       ],
-      "originalLatency": 130,
-      "optimizedLatency": 55,
-      "sizeReduction": 38,
-      "createdAt": "2026-02-15T13:01:09.580Z",
-      "completedAt": "2026-02-15T13:01:20.157Z"
+      "originalLatency": 118,
+      "optimizedLatency": 60,
+      "sizeReduction": 43,
+      "createdAt": "2026-03-29T14:10:37.864Z",
+      "completedAt": "2026-03-29T14:10:48.471Z"
+    },
+    "973112cc-1b30-4df8-b078-96c4901cd1c2": {
+      "id": "973112cc-1b30-4df8-b078-96c4901cd1c2",
+      "fileName": "dummy.pt",
+      "fileSize": 529141257,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA A100",
+        "strategy": "Latency Focus",
+        "pruning": "None",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 146359,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1008
+        },
+        {
+          "id": 771229,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 815
+        },
+        {
+          "id": 631163,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 513
+        },
+        {
+          "id": 759965,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2012
+        },
+        {
+          "id": 602255,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3016
+        },
+        {
+          "id": 966299,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2012
+        }
+      ],
+      "originalLatency": 101,
+      "optimizedLatency": 46,
+      "sizeReduction": 55,
+      "createdAt": "2026-03-29T15:51:00.299Z",
+      "completedAt": "2026-03-29T15:51:10.407Z"
     }
   },
   "users": {},
   "templates": {},
   "webhooks": {},
   "apiKeys": {},
-  "teams": {},
-  "teamMembers": [],
+  "teams": {
+    "7158315d-2352-4258-ae52-8984eff07d15": {
+      "id": "7158315d-2352-4258-ae52-8984eff07d15",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:11.007Z"
+    },
+    "0b18e089-bded-486e-b304-e5d272012cf5": {
+      "id": "0b18e089-bded-486e-b304-e5d272012cf5",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:12.486Z"
+    },
+    "b7c2fd3f-7137-43e0-8528-1317aaab73bd": {
+      "id": "b7c2fd3f-7137-43e0-8528-1317aaab73bd",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:13.212Z"
+    },
+    "e3e97650-3db4-46b5-9fcf-c7edbd52e4aa": {
+      "id": "e3e97650-3db4-46b5-9fcf-c7edbd52e4aa",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:13.521Z"
+    },
+    "7864468f-c389-413c-b3bb-9cca166eb291": {
+      "id": "7864468f-c389-413c-b3bb-9cca166eb291",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:13.722Z"
+    },
+    "558d2b99-8316-4164-9b33-0a14013b7a8a": {
+      "id": "558d2b99-8316-4164-9b33-0a14013b7a8a",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:13.888Z"
+    },
+    "f4d20bb8-b5b5-430f-9528-10215fa831cd": {
+      "id": "f4d20bb8-b5b5-430f-9528-10215fa831cd",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:14.105Z"
+    },
+    "0b96bede-2c4a-4b2f-af61-67f0a57ab37b": {
+      "id": "0b96bede-2c4a-4b2f-af61-67f0a57ab37b",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:37.729Z"
+    },
+    "ecf63e59-2641-442c-ad75-e0288a4f9db2": {
+      "id": "ecf63e59-2641-442c-ad75-e0288a4f9db2",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:38.800Z"
+    },
+    "ed14e409-22d4-4e6a-8888-264bc44690be": {
+      "id": "ed14e409-22d4-4e6a-8888-264bc44690be",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:38.965Z"
+    },
+    "481a180d-c309-4ea8-aa26-7157126eda6b": {
+      "id": "481a180d-c309-4ea8-aa26-7157126eda6b",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:39.146Z"
+    },
+    "98d242eb-4847-45d8-8d6e-09ebba4827ad": {
+      "id": "98d242eb-4847-45d8-8d6e-09ebba4827ad",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:39.325Z"
+    },
+    "627a9ec0-ca0f-4664-95e4-590861ad070b": {
+      "id": "627a9ec0-ca0f-4664-95e4-590861ad070b",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:39.513Z"
+    },
+    "39395c51-078e-40e1-a77d-1726c0cf11b6": {
+      "id": "39395c51-078e-40e1-a77d-1726c0cf11b6",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:39.692Z"
+    },
+    "c9418872-c6c3-421b-9b50-fd04f1ac9823": {
+      "id": "c9418872-c6c3-421b-9b50-fd04f1ac9823",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:39.897Z"
+    },
+    "acd22a0a-0ed6-4fdc-b260-8c77df4b8bbe": {
+      "id": "acd22a0a-0ed6-4fdc-b260-8c77df4b8bbe",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:40.073Z"
+    },
+    "e02f7b8a-d298-4287-8270-1e26e96f0567": {
+      "id": "e02f7b8a-d298-4287-8270-1e26e96f0567",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:40.255Z"
+    },
+    "e8a4fcf2-4d94-48f6-827a-8eddb4333c57": {
+      "id": "e8a4fcf2-4d94-48f6-827a-8eddb4333c57",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:40.448Z"
+    },
+    "c5086afb-ea0e-4e9a-b7e6-a86212fa721c": {
+      "id": "c5086afb-ea0e-4e9a-b7e6-a86212fa721c",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:39:40.669Z"
+    },
+    "ac187601-49ae-4c15-b2b9-93b00c27d81b": {
+      "id": "ac187601-49ae-4c15-b2b9-93b00c27d81b",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:40:46.454Z"
+    },
+    "b542e513-ea69-4a62-b59b-5b46fa8ac131": {
+      "id": "b542e513-ea69-4a62-b59b-5b46fa8ac131",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:42:04.338Z"
+    },
+    "5a7a31a5-3d5b-4052-9970-29b3c91a968a": {
+      "id": "5a7a31a5-3d5b-4052-9970-29b3c91a968a",
+      "name": "team",
+      "description": "",
+      "ownerId": "00000000-0000-0000-0000-000000000000",
+      "createdAt": "2026-03-29T14:42:10.282Z"
+    }
+  },
+  "teamMembers": [
+    {
+      "id": "49104d63-0587-4c82-8ea6-788c2336002c",
+      "teamId": "7158315d-2352-4258-ae52-8984eff07d15",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:11.008Z"
+    },
+    {
+      "id": "91c67175-49dc-438c-b1fe-7cec92624296",
+      "teamId": "0b18e089-bded-486e-b304-e5d272012cf5",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:12.486Z"
+    },
+    {
+      "id": "4be42d49-f224-4467-ab1a-7603f759f375",
+      "teamId": "b7c2fd3f-7137-43e0-8528-1317aaab73bd",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:13.212Z"
+    },
+    {
+      "id": "9f6a3aa0-24f3-483f-87a9-34e23d492959",
+      "teamId": "e3e97650-3db4-46b5-9fcf-c7edbd52e4aa",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:13.521Z"
+    },
+    {
+      "id": "33b6a397-147a-4b38-bf11-58c9fa56be5b",
+      "teamId": "7864468f-c389-413c-b3bb-9cca166eb291",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:13.722Z"
+    },
+    {
+      "id": "b740e3ae-a0f0-4649-906e-27c1e77ec296",
+      "teamId": "558d2b99-8316-4164-9b33-0a14013b7a8a",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:13.888Z"
+    },
+    {
+      "id": "d150b8fb-5462-4138-b156-253ff9b99df6",
+      "teamId": "f4d20bb8-b5b5-430f-9528-10215fa831cd",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:14.105Z"
+    },
+    {
+      "id": "0969fcae-5dc2-4af5-bff4-7046f7056d9d",
+      "teamId": "0b96bede-2c4a-4b2f-af61-67f0a57ab37b",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:37.729Z"
+    },
+    {
+      "id": "65250f6a-e58f-4552-8f98-884be4974cee",
+      "teamId": "ecf63e59-2641-442c-ad75-e0288a4f9db2",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:38.800Z"
+    },
+    {
+      "id": "4dffd4a9-5229-4cbe-9fcb-458a83d5ef11",
+      "teamId": "ed14e409-22d4-4e6a-8888-264bc44690be",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:38.966Z"
+    },
+    {
+      "id": "ac593fb7-928f-45f9-813c-c3f237699f55",
+      "teamId": "481a180d-c309-4ea8-aa26-7157126eda6b",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:39.146Z"
+    },
+    {
+      "id": "b9e11ec1-d437-4953-a576-a75b6ac0dd58",
+      "teamId": "98d242eb-4847-45d8-8d6e-09ebba4827ad",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:39.325Z"
+    },
+    {
+      "id": "d4ace3d3-6aef-4a45-9d06-a989a2139ec9",
+      "teamId": "627a9ec0-ca0f-4664-95e4-590861ad070b",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:39.513Z"
+    },
+    {
+      "id": "ee02178f-e2e0-4c1d-8e2d-976dc46bcd0e",
+      "teamId": "39395c51-078e-40e1-a77d-1726c0cf11b6",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:39.692Z"
+    },
+    {
+      "id": "3f30b285-114c-4279-9129-bac141d1a2a5",
+      "teamId": "c9418872-c6c3-421b-9b50-fd04f1ac9823",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:39.897Z"
+    },
+    {
+      "id": "3f6fd5a5-cd24-4cb7-bf85-002a2891c99f",
+      "teamId": "acd22a0a-0ed6-4fdc-b260-8c77df4b8bbe",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:40.073Z"
+    },
+    {
+      "id": "21623d24-5342-4441-91ee-46f3e44aa36e",
+      "teamId": "e02f7b8a-d298-4287-8270-1e26e96f0567",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:40.255Z"
+    },
+    {
+      "id": "4b90d8e3-1cd7-4ebc-b9cc-fb1583d6837f",
+      "teamId": "e8a4fcf2-4d94-48f6-827a-8eddb4333c57",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:40.448Z"
+    },
+    {
+      "id": "4e7934d5-0006-4519-9809-7f6a4993ff1e",
+      "teamId": "c5086afb-ea0e-4e9a-b7e6-a86212fa721c",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:39:40.670Z"
+    },
+    {
+      "id": "b73e4b48-c19b-4cc4-ad12-b81efd745ff6",
+      "teamId": "ac187601-49ae-4c15-b2b9-93b00c27d81b",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:40:46.454Z"
+    },
+    {
+      "id": "d10c5117-2da3-408a-ac9a-8341072ae024",
+      "teamId": "b542e513-ea69-4a62-b59b-5b46fa8ac131",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:42:04.338Z"
+    },
+    {
+      "id": "872d27e0-6723-4f08-b59f-1fcc569a43d2",
+      "teamId": "5a7a31a5-3d5b-4052-9970-29b3c91a968a",
+      "userId": "00000000-0000-0000-0000-000000000000",
+      "role": "owner",
+      "joinedAt": "2026-03-29T14:42:10.282Z"
+    }
+  ],
   "comments": [],
-  "auditLogs": [],
+  "auditLogs": {},
   "alerts": {},
   "batches": {}
 }

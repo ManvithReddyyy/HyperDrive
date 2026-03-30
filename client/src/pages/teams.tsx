@@ -49,109 +49,86 @@ export default function TeamsPage() {
     const [newTeam, setNewTeam] = useState({ name: "", description: "" });
     const [inviteForm, setInviteForm] = useState({ email: "", role: "member" });
 
+    const LS_TEAMS_KEY = "hd_teams";
+    const LS_MEMBERS_KEY = "hd_team_members";
+
+    const loadTeams = (): Team[] => {
+        try { return JSON.parse(localStorage.getItem(LS_TEAMS_KEY) || "[]"); } catch { return []; }
+    };
+    const loadMembers = (): TeamMember[] => {
+        try { return JSON.parse(localStorage.getItem(LS_MEMBERS_KEY) || "[]"); } catch { return []; }
+    };
+    const saveTeams = (t: Team[]) => localStorage.setItem(LS_TEAMS_KEY, JSON.stringify(t));
+    const saveMembers = (m: TeamMember[]) => localStorage.setItem(LS_MEMBERS_KEY, JSON.stringify(m));
+
     useEffect(() => {
-        fetchTeams();
+        const stored = loadTeams();
+        setTeams(stored);
+        if (stored.length > 0) setSelectedTeam(stored[0]);
+        setIsLoading(false);
     }, []);
 
     useEffect(() => {
         if (selectedTeam) {
-            fetchMembers(selectedTeam.id);
+            const all = loadMembers();
+            setMembers(all.filter(m => m.teamId === selectedTeam.id));
         }
     }, [selectedTeam]);
 
-    const fetchTeams = async () => {
-        try {
-            const response = await fetch("/api/teams", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("supabase_token") || ""}`,
-                },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setTeams(data);
-                if (data.length > 0 && !selectedTeam) {
-                    setSelectedTeam(data[0]);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching teams:", error);
-        }
-        setIsLoading(false);
-    };
-
-    const fetchMembers = async (teamId: string) => {
-        try {
-            const response = await fetch(`/api/teams/${teamId}/members`);
-            if (response.ok) {
-                const data = await response.json();
-                setMembers(data);
-            }
-        } catch (error) {
-            console.error("Error fetching members:", error);
-        }
-    };
-
-    const createTeam = async () => {
+    const createTeam = () => {
         if (!newTeam.name.trim()) {
             toast({ title: "Error", description: "Team name is required", variant: "destructive" });
             return;
         }
-
         setIsCreating(true);
-        try {
-            const response = await fetch("/api/teams", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("supabase_token") || ""}`,
-                },
-                body: JSON.stringify(newTeam),
-            });
-
-            if (response.ok) {
-                const team = await response.json();
-                toast({ title: "Success", description: "Team created successfully" });
-                setTeams([...teams, team]);
-                setSelectedTeam(team);
-                setCreateDialogOpen(false);
-                setNewTeam({ name: "", description: "" });
-            } else {
-                throw new Error("Failed to create team");
-            }
-        } catch (error) {
-            toast({ title: "Error", description: "Failed to create team", variant: "destructive" });
-        }
+        const team: Team = {
+            id: crypto.randomUUID(),
+            name: newTeam.name.trim(),
+            description: newTeam.description.trim() || undefined,
+            ownerId: "demo-user",
+            createdAt: new Date().toISOString(),
+        };
+        const ownerMember: TeamMember = {
+            id: crypto.randomUUID(),
+            teamId: team.id,
+            userId: "demo-user",
+            username: "Demo User",
+            role: "owner",
+            joinedAt: new Date().toISOString(),
+        };
+        const updatedTeams = [...loadTeams(), team];
+        const updatedMembers = [...loadMembers(), ownerMember];
+        saveTeams(updatedTeams);
+        saveMembers(updatedMembers);
+        setTeams(updatedTeams);
+        setSelectedTeam(team);
+        setMembers([ownerMember]);
+        toast({ title: "Success", description: "Team created successfully" });
+        setCreateDialogOpen(false);
+        setNewTeam({ name: "", description: "" });
         setIsCreating(false);
     };
 
-    const inviteMember = async () => {
+    const inviteMember = () => {
         if (!inviteForm.email.trim() || !selectedTeam) {
             toast({ title: "Error", description: "Email is required", variant: "destructive" });
             return;
         }
-
         setIsInviting(true);
-        try {
-            const response = await fetch(`/api/teams/${selectedTeam.id}/invite`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("supabase_token") || ""}`,
-                },
-                body: JSON.stringify(inviteForm),
-            });
-
-            if (response.ok) {
-                toast({ title: "Success", description: `Invitation sent to ${inviteForm.email}` });
-                setInviteDialogOpen(false);
-                setInviteForm({ email: "", role: "member" });
-                fetchMembers(selectedTeam.id);
-            } else {
-                throw new Error("Failed to invite member");
-            }
-        } catch (error) {
-            toast({ title: "Error", description: "Failed to send invitation", variant: "destructive" });
-        }
+        const newMember: TeamMember = {
+            id: crypto.randomUUID(),
+            teamId: selectedTeam.id,
+            userId: inviteForm.email,
+            username: inviteForm.email,
+            role: inviteForm.role as TeamMember["role"],
+            joinedAt: new Date().toISOString(),
+        };
+        const updatedMembers = [...loadMembers(), newMember];
+        saveMembers(updatedMembers);
+        setMembers(updatedMembers.filter(m => m.teamId === selectedTeam.id));
+        toast({ title: "Success", description: `${inviteForm.email} added to team` });
+        setInviteDialogOpen(false);
+        setInviteForm({ email: "", role: "member" });
         setIsInviting(false);
     };
 
@@ -166,6 +143,7 @@ export default function TeamsPage() {
             year: "numeric",
         });
     };
+
 
     return (
         <div className="h-full overflow-auto p-6">

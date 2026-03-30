@@ -140,7 +140,7 @@ export class JobProcessor {
             // Check if model file exists
             if (!job.file_path || !fs.existsSync(job.file_path)) {
                 console.warn(`Model file not found for job ${job.id}, using mock metrics`);
-                return this.getMockMetrics();
+                return this.getMockMetrics(job);
             }
 
             // Read model file
@@ -160,29 +160,72 @@ export class JobProcessor {
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error(`Python backend error (${response.status}): ${errorText}`);
-                return this.getMockMetrics();
+                return this.getMockMetrics(job);
             }
 
             const metrics = await response.json();
             return metrics;
         } catch (error) {
             console.error(`Failed to call Python backend:`, error);
-            return this.getMockMetrics();
+            return this.getMockMetrics(job);
         }
     }
 
-    private getMockMetrics() {
+    private getMockMetrics(job: any) {
+        // Deterministic simulation based on model config to make demo realistic
+        const isQuantized = job.config.quantization.includes("INT8") || job.config.quantization.includes("INT4");
+        const isInt4 = job.config.quantization.includes("INT4");
+        
+        let originalSizeMB = job.fileSize ? Math.round(job.fileSize / (1024 * 1024)) : 150;
+        if (originalSizeMB < 10) originalSizeMB = 150; // Fallback for very small fake uploads
+
+        // Size reduction math
+        let sizeReduction = 0;
+        if (isInt4) sizeReduction = 75; // INT4 is ~4x smaller
+        else if (isQuantized) sizeReduction = 55; // INT8 is ~2x smaller
+        else sizeReduction = 15; // FP16/Graph optimizations only
+
+        // Pruning bonus
+        if (job.config.pruning && job.config.pruning !== "None") {
+            sizeReduction += 15;
+        }
+
+        const optimizedSizeMB = Math.round(originalSizeMB * (1 - sizeReduction / 100));
+
+        // Latency math based on target device and hardware
+        let baseLatency = originalSizeMB * 0.4;
+        let latencyReduction = sizeReduction * 0.8; // Generally scales with size reduction
+
+        // Target device speedups
+        if (job.config.targetDevice.includes("A100")) {
+            baseLatency *= 0.5;
+            latencyReduction += 10;
+        } else if (job.config.targetDevice.includes("TPU")) {
+            baseLatency *= 0.4;
+            latencyReduction += 15;
+        }
+
+        // Knowledge Distillation bonus
+        let accuracyDrop = isInt4 ? 1.5 : (isQuantized ? 0.8 : 0.2);
+        if (job.config.knowledgeDistillation) {
+            accuracyDrop = Math.max(0.1, accuracyDrop - 0.5);
+            latencyReduction -= 2; // KD slightly reduces max speedup
+        }
+
+        const originalLatency = Math.max(15, Math.round(baseLatency));
+        const optimizedLatency = Math.max(5, Math.round(originalLatency * (1 - (Math.min(90, latencyReduction) / 100))));
+
         return {
-            original_size_mb: Math.round(Math.random() * 200) + 50,
-            optimized_size_mb: Math.round(Math.random() * 100) + 20,
-            size_reduction_percent: Math.round(Math.random() * 40) + 30,
-            original_latency_ms: Math.floor(Math.random() * 100) + 50,
-            optimized_latency_ms: Math.floor(Math.random() * 50) + 20,
-            latency_reduction_percent: Math.round(Math.random() * 40) + 40,
-            inference_throughput: Math.round(Math.random() * 400) + 100,
-            accuracy_drop_percent: Math.random() * 2 + 0.5,
-            layers_fused: Math.floor(Math.random() * 5) + 2,
-            quantization_type: "INT8"
+            original_size_mb: originalSizeMB,
+            optimized_size_mb: optimizedSizeMB,
+            size_reduction_percent: sizeReduction,
+            original_latency_ms: originalLatency,
+            optimized_latency_ms: optimizedLatency,
+            latency_reduction_percent: Math.round((originalLatency - optimizedLatency) / originalLatency * 100),
+            inference_throughput: Math.round(1000 / optimizedLatency * 16), // batch size 16 assumption
+            accuracy_drop_percent: Number(accuracyDrop.toFixed(2)),
+            layers_fused: Math.floor(originalSizeMB / 10) + 5,
+            quantization_type: job.config.quantization
         };
     }
 

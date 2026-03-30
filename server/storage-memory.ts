@@ -189,110 +189,168 @@ export class MemoryStorage implements IStorage {
         else if (quant.includes("BF16")) { dtype = "np.float32"; dtypeComment = "# BF16 cast handled by runtime"; }
         else if (quant.includes("INT8")) { dtype = "np.float32"; dtypeComment = "# INT8 quantized, input still float32"; }
 
-        const python = `"""
-HyperDrive Deployment Code
-Model: ${job.fileName}
-Quantization: ${quant}
-Target Device: ${device}
-Original Latency: ${origLatency}ms → Optimized: ${optLatency}ms
-Size Reduction: ${sizeRed}%
-Generated: ${new Date().toISOString()}
+        const python = `#!/usr/bin/env python3
+"""
+HyperDrive — Auto-Generated Production Inference Server
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Model     : ${job.fileName}
+Optimized : ${modelFile}
+Strategy  : ${quant} on ${device}
+Latency   : ${origLatency}ms → ${optLatency}ms  (${sizeRed}% size reduction)
+Generated : ${new Date().toISOString()}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
-import onnxruntime as ort
-import numpy as np
 import time
+import logging
+import numpy as np
+import onnxruntime as ort
+from contextlib import asynccontextmanager
+from typing import Any
 
-# ── Load the optimized model ──────────────────────────────
-MODEL_PATH = "${modelFile}"
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from starlette.responses import Response
 
-# Session options for ${device}
+# ── Logging Setup ─────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%S",
+)
+log = logging.getLogger("hyperdrive.${modelBase}")
+
+# ── Prometheus Metrics ────────────────────────────────────────────────────────
+REQUEST_COUNT = Counter("inference_requests_total", "Total inference requests", ["status"])
+LATENCY_HIST  = Histogram("inference_latency_seconds", "Inference latency",
+                           buckets=[.005, .01, .025, .05, .1, .25, .5, 1.0])
+
+# ── Model Config ──────────────────────────────────────────────────────────────
+MODEL_PATH   = "${modelFile}"
+PROVIDERS    = [${provider}]
+QUANTIZATION = "${quant}"
+DEVICE       = "${device}"
+
+# ── ONNX Session ──────────────────────────────────────────────────────────────
 sess_options = ort.SessionOptions()
 sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
 sess_options.intra_op_num_threads = 4
+sess_options.execution_mode = ort.ExecutionMode.ORT_PARALLEL
 
-session = ort.InferenceSession(
-    MODEL_PATH,
-    sess_options,
-    providers=[${provider}]
+session = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global session
+    log.info(f"Loading model: {MODEL_PATH}")
+    session = ort.InferenceSession(MODEL_PATH, sess_options, providers=PROVIDERS)
+    log.info(f"Ready  ·  providers={session.get_providers()}")
+    log.info(f"Input  → {session.get_inputs()[0].name}  {session.get_inputs()[0].shape}")
+    log.info(f"Output → {session.get_outputs()[0].name}  {session.get_outputs()[0].shape}")
+    yield
+    log.info("Shutting down.")
+
+# ── FastAPI App ───────────────────────────────────────────────────────────────
+app = FastAPI(
+    title="HyperDrive Inference API",
+    description="Optimized inference server for **${modelBase}** (${quant})",
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
-print(f"Model loaded: {MODEL_PATH}")
-print(f"Provider: {session.get_providers()}")
+class InferenceRequest(BaseModel):
+    inputs: list[list[Any]]
 
-# ── Get input/output metadata ────────────────────────────
-input_meta = session.get_inputs()[0]
-output_meta = session.get_outputs()[0]
+class InferenceResponse(BaseModel):
+    outputs: list[list[float]]
+    latency_ms: float
+    model: str
+    device: str
 
-print(f"Input: {input_meta.name} {input_meta.shape} ({input_meta.type})")
-print(f"Output: {output_meta.name} {output_meta.shape} ({output_meta.type})")
+@app.get("/health", tags=["ops"])
+async def health():
+    return {"status": "ok", "model": "${modelBase}", "quantization": QUANTIZATION}
 
-# ── Inference function ───────────────────────────────────
-def predict(input_data: np.ndarray) -> np.ndarray:
-    """Run inference on the optimized ${modelBase} model."""
-    ${dtypeComment}
-    result = session.run(
-        [output_meta.name],
-        {input_meta.name: input_data.astype(${dtype})}
-    )
-    return result[0]
+@app.get("/ready", tags=["ops"])
+async def ready():
+    if session is None:
+        raise HTTPException(503, "Model not loaded yet")
+    return {"status": "ready"}
 
-def benchmark(input_data: np.ndarray, runs: int = 100) -> dict:
-    """Benchmark the optimized model."""
-    # Warmup
-    for _ in range(10):
-        predict(input_data)
+@app.get("/metrics", tags=["ops"])
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
-    # Timed runs
+@app.post("/predict", response_model=InferenceResponse, tags=["inference"])
+async def predict(req: InferenceRequest):
+    if session is None:
+        raise HTTPException(503, "Model not ready")
+    try:
+        inp  = session.get_inputs()[0]
+        out  = session.get_outputs()[0]
+        arr  = np.array(req.inputs, dtype=${dtype})  ${dtypeComment}
+        t0   = time.perf_counter()
+        res  = session.run([out.name], {inp.name: arr})[0]
+        lat  = (time.perf_counter() - t0) * 1000
+        LATENCY_HIST.observe(lat / 1000)
+        REQUEST_COUNT.labels(status="success").inc()
+        log.info(f"predict  batch={arr.shape[0]}  latency={lat:.2f}ms")
+        return InferenceResponse(outputs=res.tolist(), latency_ms=round(lat, 3),
+                                 model="${modelBase}", device=DEVICE)
+    except Exception as exc:
+        REQUEST_COUNT.labels(status="error").inc()
+        raise HTTPException(500, f"Inference error: {exc}") from exc
+
+@app.get("/benchmark", tags=["inference"])
+async def benchmark(runs: int = 50):
+    """Quick latency benchmark using random inputs."""
+    if session is None:
+        raise HTTPException(503, "Model not ready")
+    inp   = session.get_inputs()[0]
+    shape = [s if isinstance(s, int) else 1 for s in inp.shape]
+    dummy = np.random.randn(*shape).astype(${dtype})
+    for _ in range(5): session.run(None, {inp.name: dummy})   # warmup
     times = []
     for _ in range(runs):
-        start = time.perf_counter()
-        predict(input_data)
-        times.append((time.perf_counter() - start) * 1000)
-
+        t0 = time.perf_counter()
+        session.run(None, {inp.name: dummy})
+        times.append((time.perf_counter() - t0) * 1000)
     return {
-        "mean_ms": np.mean(times),
-        "p50_ms": np.percentile(times, 50),
-        "p95_ms": np.percentile(times, 95),
-        "p99_ms": np.percentile(times, 99),
+        "model": "${modelBase}", "quantization": QUANTIZATION,
+        "runs": runs,
+        "mean_ms":  round(float(np.mean(times)), 2),
+        "p50_ms":   round(float(np.percentile(times, 50)), 2),
+        "p95_ms":   round(float(np.percentile(times, 95)), 2),
+        "p99_ms":   round(float(np.percentile(times, 99)), 2),
+        "throughput_rps": round(1000 / float(np.mean(times)), 1),
     }
 
 if __name__ == "__main__":
-    # Create sample input matching model's expected shape
-    input_shape = input_meta.shape
-    # Replace dynamic dims with default values
-    shape = [s if isinstance(s, int) else 1 for s in input_shape]
-    sample = np.random.randn(*shape).astype(${dtype})  ${dtypeComment}
-
-    output = predict(sample)
-    print(f"\\nOutput shape: {output.shape}")
-    print(f"Output dtype: {output.dtype}")
-    print(f"Output range: [{output.min():.4f}, {output.max():.4f}]")
-
-    print("\\nBenchmarking...")
-    stats = benchmark(sample)
-    print(f"Mean latency: {stats['mean_ms']:.2f}ms")
-    print(f"P95 latency:  {stats['p95_ms']:.2f}ms")
-    print(f"P99 latency:  {stats['p99_ms']:.2f}ms")
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8080, workers=1, log_level="info")
 `;
 
         // GPU kind for Triton
         let gpuKind = "KIND_GPU";
         if (device.includes("CPU") || device.includes("Intel Xeon") || device.includes("Intel Core")) gpuKind = "KIND_CPU";
 
-        const triton = `# Triton Inference Server Configuration
-# Model: ${modelBase} (${quant})
-# Target: ${device}
+        const triton = `# ═══════════════════════════════════════════════════════════
+# Triton Inference Server  ·  HyperDrive Auto-Config
+# Model   : ${modelBase}  (${quant})
+# Device  : ${device}
+# Latency : ${origLatency}ms → ${optLatency}ms
+# ═══════════════════════════════════════════════════════════
 
 name: "${modelBase}"
 platform: "onnxruntime_onnx"
-max_batch_size: 8
+max_batch_size: 16
 
 input [
   {
     name: "input"
     data_type: TYPE_FP32
-    dims: [-1]  # Set to your model's actual input dimensions
+    dims: [ -1 ]   # Replace with actual input dims, e.g. [ 3, 224, 224 ]
   }
 ]
 
@@ -300,59 +358,95 @@ output [
   {
     name: "output"
     data_type: TYPE_FP32
-    dims: [-1]
+    dims: [ -1 ]
   }
 ]
 
 instance_group [
   {
-    count: 1
+    count: 2
     kind: ${gpuKind}
   }
 ]
 
 dynamic_batching {
-  preferred_batch_size: [4, 8]
-  max_queue_delay_microseconds: 100
+  preferred_batch_size: [ 4, 8, 16 ]
+  max_queue_delay_microseconds: 500
+  preserve_ordering: true
 }
 
-# Optimization settings for ${quant}
-parameters: {
-  key: "optimization_level"
-  value: { string_value: "all" }
+optimization { graph { level: 2 } }
+
+parameters {
+  key: "intra_op_thread_count"
+  value: { string_value: "4" }
 }
+
+model_warmup [
+  {
+    name: "warmup"
+    batch_size: 1
+    inputs { key: "input"  value: { data_type: TYPE_FP32  dims: [1]  zero_data: true } }
+  }
+]
 `;
 
-        const docker = `# HyperDrive Optimized Model Deployment
-# Model: ${job.fileName} → ${modelFile}
-# Config: ${quant} | ${device}
-# Performance: ${origLatency}ms → ${optLatency}ms (${sizeRed}% smaller)
+        const docker = `# ════════════════════════════════════════════════════════
+# HyperDrive  ·  Production Dockerfile (Multi-Stage)
+# Model   : ${job.fileName} → ${modelFile}
+# Config  : ${quant} | ${device}
+# Perf    : ${origLatency}ms → ${optLatency}ms  ·  ${sizeRed}% smaller
+# ════════════════════════════════════════════════════════
 
-FROM nvcr.io/nvidia/tritonserver:23.10-py3
+# ── Stage 1: Dependency Builder ──────────────────────────
+FROM python:3.11-slim AS builder
 
-# Copy optimized model
-COPY ${modelFile} /models/${modelBase}/1/model.onnx
-COPY config.pbtxt /models/${modelBase}/config.pbtxt
+RUN apt-get update && apt-get install -y --no-install-recommends \\
+        build-essential curl && rm -rf /var/lib/apt/lists/*
 
-# Environment
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV CUDA_VISIBLE_DEVICES=0
-ENV MODEL_NAME="${modelBase}"
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --upgrade pip && \\
+    pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s \\
-  CMD curl -f http://localhost:8000/v2/health/ready || exit 1
+# ── Stage 2: Production Runtime ──────────────────────────
+FROM python:3.11-slim AS runtime
 
-EXPOSE 8000 8001 8002
+LABEL maintainer="HyperDrive <team@hyperdrive.ai>"
+LABEL model="${modelBase}"
+LABEL quantization="${quant}"
 
-CMD ["tritonserver", \\
-     "--model-repository=/models", \\
-     "--strict-model-config=false", \\
-     "--log-verbose=1"]
+# Security: non-root user
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+WORKDIR /app
+
+COPY --from=builder /wheels /wheels
+RUN pip install --no-cache /wheels/*
+
+COPY server.py .
+COPY ${modelFile} .
+
+USER appuser
+EXPOSE 8080
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \\
+  CMD curl -f http://localhost:8080/health || exit 1
+
+# ── requirements.txt ─────────────────────────────────────
+# onnxruntime-gpu==1.17.3
+# fastapi==0.110.0
+# uvicorn[standard]==0.29.0
+# pydantic==2.6.4
+# numpy==1.26.4
+# prometheus-client==0.20.0
+
+CMD ["python", "server.py"]
 `;
 
         return { python, triton, docker };
     }
+
+
 
     // ================== Users ==================
     async getUser(id: string): Promise<User | undefined> {

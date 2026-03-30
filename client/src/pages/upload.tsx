@@ -1,8 +1,9 @@
 import { useState, useCallback } from "react";
 import { useLocation } from "wouter";
-import { Upload, FileUp, Zap, Cpu, Target, Info } from "lucide-react";
+import { Upload, FileUp, Zap, Cpu, Target, Info, Scissors, Activity, Settings2, Network, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -18,6 +19,8 @@ import {
   quantizationOptions,
   targetDeviceOptions,
   strategyOptions,
+  pruningOptions,
+  graphOptimizationOptions,
 } from "@shared/schema";
 
 export default function UploadPage() {
@@ -31,6 +34,10 @@ export default function UploadPage() {
     quantization: "INT8 Dynamic",
     targetDevice: "NVIDIA A100",
     strategy: "Latency Focus",
+    pruning: "None",
+    graphOptimization: "Level 3 (All - Fusion + Fold)",
+    knowledgeDistillation: false,
+    kernelAutoTuning: true,
   });
 
   const uploadMutation = useMutation({
@@ -318,6 +325,88 @@ export default function UploadPage() {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 text-sm font-medium py-4 text-foreground border-t border-border mt-4">
+              <Settings2 className="h-4 w-4" />
+              Advanced Settings
+            </div>
+            <div className="space-y-5 pt-2">
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Scissors className="h-3.5 w-3.5" />
+                  Model Pruning / Sparsity
+                </label>
+                <Select
+                  value={config.pruning || "None"}
+                  onValueChange={(value) =>
+                    setConfig({ ...config, pruning: value as any })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select pruning method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {pruningOptions.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Activity className="h-3.5 w-3.5" />
+                  Graph Optimization
+                </label>
+                <Select
+                  value={config.graphOptimization || "Level 3 (All - Fusion + Fold)"}
+                  onValueChange={(value) =>
+                    setConfig({ ...config, graphOptimization: value as any })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {graphOptimizationOptions.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center justify-between py-1">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Network className="h-3.5 w-3.5" />
+                  Knowledge Distillation
+                </label>
+                <Switch
+                  checked={config.knowledgeDistillation}
+                  onCheckedChange={(checked) =>
+                    setConfig({ ...config, knowledgeDistillation: checked })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between py-1">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Wand2 className="h-3.5 w-3.5" />
+                  Kernel Auto-Tuning
+                </label>
+                <Switch
+                  checked={config.kernelAutoTuning}
+                  onCheckedChange={(checked) =>
+                    setConfig({ ...config, kernelAutoTuning: checked })
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
 

@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
-    // Fetch current user session
+    // Mock user session so Supabase doesn't try to fetch and crash the app
     const {
         data: user,
         error,
@@ -37,25 +37,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = useQuery<User | null, Error>({
         queryKey: ["auth", "user"],
         queryFn: async () => {
-            const { data: { session }, error } = await supabase.auth.getSession();
-
-            if (error || !session) return null;
-
-            // Try to get display name from public.users table
-            const { data: userProfile } = await supabase
-                .from("users")
-                .select("username")
-                .eq("id", session.user.id)
-                .single();
-
+            // Instantly return a mock user for the presentation
             return {
-                id: session.user.id,
-                username: userProfile?.username || session.user.email || "",
-                email: session.user.email || "",
+                id: "1",
+                username: "demo_user",
+                email: "demo@hyperdrive.ai",
                 password: "",
             };
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        staleTime: 5 * 60 * 1000,
         retry: false,
     });
 

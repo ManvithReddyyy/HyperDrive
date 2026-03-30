@@ -110,10 +110,28 @@ export const strategyOptions = [
 ] as const;
 export const jobStatusOptions = ["pending", "running", "completed", "failed"] as const;
 
+export const pruningOptions = [
+  "None",
+  "2:4 Structured Sparsity",
+  "Unstructured (50%)",
+  "Unstructured (75%)",
+  "Magnitude Pruning",
+] as const;
+
+export const graphOptimizationOptions = [
+  "Level 1 (Basic)",
+  "Level 2 (Extended)",
+  "Level 3 (All - Fusion + Fold)",
+] as const;
+
 export const optimizationConfigSchema = z.object({
   quantization: z.enum(quantizationOptions),
   targetDevice: z.enum(targetDeviceOptions),
   strategy: z.enum(strategyOptions),
+  pruning: z.enum(pruningOptions).optional(),
+  graphOptimization: z.enum(graphOptimizationOptions).optional(),
+  knowledgeDistillation: z.boolean().optional(),
+  kernelAutoTuning: z.boolean().optional(),
 });
 
 export type OptimizationConfig = z.infer<typeof optimizationConfigSchema>;

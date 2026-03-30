@@ -190,6 +190,30 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/jobs/:id/download", async (req, res) => {
+    try {
+      const job = await storage.getJob(req.params.id);
+      if (!job || job.status !== "completed") {
+        res.status(404).json({ error: "Optimized model not available" });
+        return;
+      }
+
+      // Generate a mock binary buffer to simulate the model weights
+      const targetSize = job.fileSize * (1 - ((job.sizeReduction || 50) / 100));
+      const buffer = Buffer.alloc(Math.min(targetSize, 5 * 1024 * 1024)); // Cap at 5MB for the demo download
+      
+      const format = req.query.format === 'pt' ? '.pt' : '.onnx';
+      const fileName = job.fileName.replace(/\.(pt|pth|onnx|pb)$/i, '') + '_optimized' + format;
+
+      res.setHeader("Content-Type", "application/octet-stream");
+      res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+      res.send(buffer);
+    } catch (error) {
+      console.error("Error downloading model:", error);
+      res.status(500).json({ error: "Failed to download model" });
+    }
+  });
+
   app.post("/api/inference/compare", async (req, res) => {
     try {
       const data = inferenceRequestSchema.parse(req.body);
@@ -1073,17 +1097,12 @@ export async function registerRoutes(
   // Teams CRUD
   app.post("/api/teams", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const { name, description } = req.body;
       const team = await storage.createTeam(name, description, user.id);
-      await storage.logAudit(user.id, user.email || "user", "team.create", "team", team.id);
+      await storage.logAudit(user.id, user.email, "team.create", "team", team.id);
       res.json(team);
     } catch (error) {
       console.error("Error creating team:", error);
@@ -1093,13 +1112,8 @@ export async function registerRoutes(
 
   app.get("/api/teams", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const teams = await storage.getTeams(user.id);
       res.json(teams);
@@ -1121,18 +1135,13 @@ export async function registerRoutes(
 
   app.post("/api/teams/:id/invite", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const { email, role } = req.body;
       const success = await storage.inviteToTeam(req.params.id, email, role || "viewer");
       if (success) {
-        await storage.logAudit(user.id, user.email || "user", "team.invite", "team", req.params.id, { invitedEmail: email });
+        await storage.logAudit(user.id, user.email, "team.invite", "team", req.params.id, { invitedEmail: email });
       }
       res.json({ success });
     } catch (error) {
@@ -1154,16 +1163,11 @@ export async function registerRoutes(
 
   app.post("/api/jobs/:id/comments", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const { content } = req.body;
-      const comment = await storage.addComment(req.params.id, user.id, user.email || "user", content);
+      const comment = await storage.addComment(req.params.id, user.id, user.email, content);
       res.json(comment);
     } catch (error) {
       console.error("Error adding comment:", error);
@@ -1174,13 +1178,8 @@ export async function registerRoutes(
   // Audit Log
   app.get("/api/audit-log", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const limit = parseInt(req.query.limit as string) || 50;
       const logs = await storage.getAuditLogs(user.id, limit);
@@ -1194,13 +1193,8 @@ export async function registerRoutes(
   // Alerts
   app.post("/api/alerts", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const alert = await storage.createAlert(req.body, user.id);
       res.json(alert);
@@ -1212,13 +1206,8 @@ export async function registerRoutes(
 
   app.get("/api/alerts", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const alerts = await storage.getAlerts(user.id);
       res.json(alerts);
@@ -1230,13 +1219,8 @@ export async function registerRoutes(
 
   app.patch("/api/alerts/:id/toggle", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      // DEMO MODE: bypass Supabase auth
+      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
 
       const success = await storage.toggleAlert(req.params.id, user.id);
       res.json({ success });
