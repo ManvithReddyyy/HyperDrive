@@ -95,7 +95,7 @@ function StatCard({
                     <p className={`text-3xl font-bold mt-1 ${color}`}>{value}</p>
                     {subtext && <p className="text-xs text-muted-foreground mt-1">{subtext}</p>}
                 </div>
-                <div className={`p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 ${color}`}>
+                <div className={`p-2 rounded-lg bg-muted/50 ${color}`}>
                     <Icon className="h-5 w-5" />
                 </div>
             </div>
@@ -275,7 +275,7 @@ export function InsightsDashboard() {
 
             {/* Recent Activity */}
             <Card className="overflow-hidden">
-                <div className="px-6 py-4 border-b bg-zinc-50 dark:bg-zinc-900/50">
+                <div className="px-6 py-4 border-b bg-muted/30">
                     <h4 className="font-semibold">Recent Activity</h4>
                 </div>
                 <div className="divide-y">
@@ -321,7 +321,7 @@ export function InsightsDashboard() {
             {/* Model Projections - Per-model cost savings */}
             {data.modelProjections && data.modelProjections.length > 0 && (
                 <Card className="overflow-hidden">
-                    <div className="px-6 py-4 border-b bg-zinc-50 dark:bg-zinc-900/50">
+                    <div className="px-6 py-4 border-b bg-muted/30">
                         <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4 text-green-600" />
                             <h4 className="font-semibold">Per-Model Cost Projections</h4>
@@ -330,7 +330,7 @@ export function InsightsDashboard() {
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
-                            <thead className="bg-zinc-100 dark:bg-zinc-800/50">
+                            <thead className="bg-muted/50">
                                 <tr>
                                     <th className="px-4 py-3 text-left font-medium">Model</th>
                                     <th className="px-4 py-3 text-center font-medium">Original</th>
@@ -343,7 +343,7 @@ export function InsightsDashboard() {
                             </thead>
                             <tbody className="divide-y">
                                 {data.modelProjections.map((model) => (
-                                    <tr key={model.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-900/30">
+                                    <tr key={model.id} className="hover:bg-muted/30">
                                         <td className="px-4 py-3">
                                             <div className="flex items-center gap-2">
                                                 <FileBox className="h-4 w-4 text-blue-500" />

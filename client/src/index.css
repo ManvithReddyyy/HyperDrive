@@ -2,88 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LIGHT MODE - Nord Theme (Snow Storm) */
+/* PURE WHITE MINIMALIST THEME (Light Mode) */
 :root {
-  --button-outline: rgba(46, 52, 64, .08);
-  --badge-outline: rgba(46, 52, 64, .05);
+  --button-outline: rgba(0, 0, 0, .05);
+  --badge-outline: rgba(0, 0, 0, .05);
   --opaque-button-border-intensity: -6;
-  --elevate-1: rgba(46, 52, 64, .03);
-  --elevate-2: rgba(46, 52, 64, .06);
+  --elevate-1: rgba(0, 0, 0, .02);
+  --elevate-2: rgba(0, 0, 0, .04);
   
-  /* Nord6: Snow Storm White */
-  --background: 218 27% 94%; 
-  /* Nord0: Polar Night Black */
-  --foreground: 220 16% 22%; 
+  --background: 0 0% 100%; 
+  --foreground: 222 47% 11%; 
   
-  /* Nord4: Snow Storm Gray */
-  --border: 218 27% 88%; 
-  /* White for cards to pop against Nord6 bg */
-  --card: 0 0% 100%; 
-  --card-foreground: 220 16% 22%;
-  --card-border: 218 27% 88%;
+  --border: 210 40% 94%;
   
-  /* Sidebar uses Nord5 */
-  --sidebar: 218 27% 92%;
-  --sidebar-foreground: 220 16% 22%;
-  --sidebar-border: 218 27% 88%;
-  --sidebar-primary: 213 32% 52%; /* Nord10 */
-  --sidebar-primary-foreground: 218 27% 94%;
-  --sidebar-accent: 218 27% 88%; /* Nord4 */
-  --sidebar-accent-foreground: 220 16% 22%;
-  --sidebar-ring: 213 32% 52%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 210 40% 94%;
+  
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-border: 210 40% 94%;
+  --sidebar-primary: 221 83% 53%; 
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 210 40% 96%; 
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-ring: 221 83% 53%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 220 16% 22%;
-  --popover-border: 218 27% 88%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 210 40% 94%;
   
-  /* Nord10: Frost Blue */
-  --primary: 213 32% 52%;
-  --primary-foreground: 218 27% 94%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
   
-  /* Nord4 */
-  --secondary: 218 27% 88%;
-  --secondary-foreground: 220 16% 22%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
   
-  /* Nord4 */
-  --muted: 218 27% 88%;
-  --muted-foreground: 220 16% 36%; /* Nord3 */
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
   
-  /* Nord8: Frost Cyan */
-  --accent: 193 43% 67%;
-  --accent-foreground: 220 16% 22%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222 47% 11%;
   
-  /* Nord11: Aurora Red */
-  --destructive: 354 42% 56%;
-  --destructive-foreground: 218 27% 94%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
   
-  --input: 218 27% 88%;
-  --ring: 213 32% 52%;
+  --input: 210 40% 94%;
+  --ring: 221 83% 53%;
   
-  /* Aurora Palette for Charts */
-  --chart-1: 354 42% 56%; /* Nord11 Red */
-  --chart-2: 92 28% 65%;  /* Nord14 Green */
-  --chart-3: 40 71% 73%;  /* Nord13 Yellow */
-  --chart-4: 311 20% 63%; /* Nord15 Purple */
-  --chart-5: 14 51% 63%;  /* Nord12 Orange */
+  /* Minimalist Charts Palette */
+  --chart-1: 221 83% 53%;
+  --chart-2: 215 16% 47%;
+  --chart-3: 210 40% 90%;
+  --chart-4: 200 80% 50%;
+  --chart-5: 222 47% 11%;
   
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, Menlo, Monaco, monospace;
-  --radius: .375rem;
+  --radius: .5rem;
   
-  --shadow-2xs: 0px 1px 2px 0px hsl(220 16% 22% / 0.03);
-  --shadow-xs: 0px 1px 2px 0px hsl(220 16% 22% / 0.04);
-  --shadow-sm: 0px 1px 3px 0px hsl(220 16% 22% / 0.05), 0px 1px 2px -1px hsl(220 16% 22% / 0.03);
-  --shadow: 0px 2px 4px 0px hsl(220 16% 22% / 0.05), 0px 1px 2px -1px hsl(220 16% 22% / 0.03);
-  --shadow-md: 0px 4px 6px -1px hsl(220 16% 22% / 0.05), 0px 2px 4px -2px hsl(220 16% 22% / 0.03);
-  --shadow-lg: 0px 8px 12px -2px hsl(220 16% 22% / 0.05), 0px 4px 6px -3px hsl(220 16% 22% / 0.03);
-  --shadow-xl: 0px 12px 16px -3px hsl(220 16% 22% / 0.05), 0px 6px 8px -4px hsl(220 16% 22% / 0.03);
-  --shadow-2xl: 0px 16px 24px -4px hsl(220 16% 22% / 0.06);
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.02);
+  --shadow-xs: 0px 1px 2px 0px rgba(0,0,0,0.03);
+  --shadow-sm: 0px 1px 3px 0px rgba(0,0,0,0.04), 0px 1px 2px -1px rgba(0,0,0,0.02);
+  --shadow: 0px 2px 4px 0px rgba(0,0,0,0.04), 0px 1px 2px -1px rgba(0,0,0,0.02);
+  --shadow-md: 0px 4px 6px -1px rgba(0,0,0,0.04), 0px 2px 4px -2px rgba(0,0,0,0.02);
+  --shadow-lg: 0px 8px 12px -2px rgba(0,0,0,0.04), 0px 4px 6px -3px rgba(0,0,0,0.02);
+  --shadow-xl: 0px 12px 16px -3px rgba(0,0,0,0.04), 0px 6px 8px -4px rgba(0,0,0,0.02);
+  --shadow-2xl: 0px 16px 24px -4px rgba(0,0,0,0.04);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
   
-  --success: 92 28% 65%; /* Nord14 */
-  --success-foreground: 220 16% 22%;
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 100%;
 
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
@@ -101,73 +92,74 @@
   --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
-/* DARK MODE - Nord Theme (Polar Night) */
+/* SOFT DARK THEME — warm charcoal, easy on the eyes */
 .dark {
-  --button-outline: rgba(216, 222, 233, .10);
-  --badge-outline: rgba(216, 222, 233, .05);
-  --opaque-button-border-intensity: 8;
-  --elevate-1: rgba(216, 222, 233, .04);
-  --elevate-2: rgba(216, 222, 233, .08);
+  --button-outline: rgba(255, 255, 255, .06);
+  --badge-outline: rgba(255, 255, 255, .06);
+  --opaque-button-border-intensity: 6;
+  --elevate-1: rgba(255, 255, 255, .03);
+  --elevate-2: rgba(255, 255, 255, .06);
   
-  /* Nord0: Polar Night */
-  --background: 220 16% 22%; 
-  /* Nord4: Snow Storm */
-  --foreground: 218 27% 88%; 
+  /* Soft charcoal base — NOT pure black */
+  --background: 224 14% 10%;
+  --foreground: 210 20% 90%;
   
-  /* Nord2 */
-  --border: 220 17% 32%;
+  --border: 220 13% 18%;
   
-  /* Nord1: Slightly lighter Polar Night */
-  --card: 222 16% 28%;
-  --card-foreground: 218 27% 88%;
-  --card-border: 220 17% 32%;
+  /* Slightly elevated card surface for depth */
+  --card: 222 14% 13%;
+  --card-foreground: 210 20% 90%;
+  --card-border: 220 13% 18%;
   
-  /* Sidebar matches background or slightly different */
-  --sidebar: 220 16% 22%;
-  --sidebar-foreground: 218 27% 88%;
-  --sidebar-border: 220 17% 32%;
-  --sidebar-primary: 193 43% 67%; /* Nord8 Cyan */
-  --sidebar-primary-foreground: 220 16% 22%;
-  --sidebar-accent: 220 17% 32%; /* Nord2 */
-  --sidebar-accent-foreground: 218 27% 88%;
-  --sidebar-ring: 193 43% 67%;
+  --sidebar: 225 15% 11%;
+  --sidebar-foreground: 210 20% 90%;
+  --sidebar-border: 220 13% 18%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 14% 16%;
+  --sidebar-accent-foreground: 210 20% 90%;
+  --sidebar-ring: 217 91% 60%;
 
-  --popover: 222 16% 28%;
-  --popover-foreground: 218 27% 88%;
-  --popover-border: 220 17% 32%;
+  --popover: 222 14% 13%;
+  --popover-foreground: 210 20% 90%;
+  --popover-border: 220 13% 18%;
   
-  /* Nord8: Frost Cyan */
-  --primary: 193 43% 67%;
-  --primary-foreground: 220 16% 22%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
   
-  /* Nord2 */
-  --secondary: 220 17% 32%;
-  --secondary-foreground: 218 27% 88%;
+  --secondary: 220 14% 16%;
+  --secondary-foreground: 210 20% 82%;
   
-  /* Nord2 */
-  --muted: 220 17% 32%;
-  --muted-foreground: 218 27% 75%; /* Dimmed Nord4 */
+  --muted: 220 14% 16%;
+  --muted-foreground: 215 15% 55%;
   
-  /* Nord2 */
-  --accent: 220 17% 32%;
-  --accent-foreground: 218 27% 88%;
+  --accent: 220 14% 16%;
+  --accent-foreground: 210 20% 90%;
   
-  /* Nord11 */
-  --destructive: 354 42% 56%;
-  --destructive-foreground: 218 27% 94%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
   
-  --input: 220 17% 32%;
-  --ring: 193 43% 67%;
+  --input: 220 13% 18%;
+  --ring: 217 91% 60%;
   
-  /* Aurora Palette for Charts */
-  --chart-1: 354 42% 56%; /* Nord11 */
-  --chart-2: 92 28% 65%;  /* Nord14 */
-  --chart-3: 40 71% 73%;  /* Nord13 */
-  --chart-4: 311 20% 63%; /* Nord15 */
-  --chart-5: 14 51% 63%;  /* Nord12 */
+  /* Dark Charts Palette */
+  --chart-1: 217 91% 60%;
+  --chart-2: 215 15% 55%;
+  --chart-3: 220 14% 24%;
+  --chart-4: 199 89% 48%;
+  --chart-5: 210 20% 82%;
   
-  --success: 92 28% 65%;
-  --success-foreground: 220 16% 22%;
+  --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.15);
+  --shadow-xs: 0px 1px 2px 0px rgba(0,0,0,0.2);
+  --shadow-sm: 0px 1px 3px 0px rgba(0,0,0,0.25), 0px 1px 2px -1px rgba(0,0,0,0.15);
+  --shadow: 0px 2px 4px 0px rgba(0,0,0,0.25), 0px 1px 2px -1px rgba(0,0,0,0.15);
+  --shadow-md: 0px 4px 6px -1px rgba(0,0,0,0.3), 0px 2px 4px -2px rgba(0,0,0,0.2);
+  --shadow-lg: 0px 8px 12px -2px rgba(0,0,0,0.35), 0px 4px 6px -3px rgba(0,0,0,0.2);
+  --shadow-xl: 0px 12px 16px -3px rgba(0,0,0,0.35), 0px 6px 8px -4px rgba(0,0,0,0.2);
+  --shadow-2xl: 0px 16px 24px -4px rgba(0,0,0,0.4);
+  
+  --success: 142 71% 45%;
+  --success-foreground: 0 0% 100%;
 
   --sidebar-primary-border: hsl(var(--sidebar-primary));
   --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
@@ -287,5 +279,139 @@
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.3);
+  }
+}
+
+/* Landing Page Theme - Scoped to avoid clashing with the Nord dashboard */
+.landing-theme {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 213 45% 62%;
+  --card-foreground: 0 0% 100%;
+  --primary: 0 0% 100%;
+  --primary-foreground: 213 45% 67%;
+  --secondary: 213 45% 72%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 213 35% 60%;
+  --muted-foreground: 0 0% 100% / 0.7;
+  --accent: 213 45% 72%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --border: 0 0% 100% / 0.2;
+  --input: 0 0% 100% / 0.2;
+  --ring: 0 0% 100% / 0.3;
+  --radius: 9999px;
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  --glass-blur: 16px;
+}
+
+@layer components {
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(255, 255, 255, 0.15) 20%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0.15) 80%,
+      rgba(255, 255, 255, 0.45) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .liquid-glass-strong {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border: none;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.05),
+      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass-strong::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0) 60%,
+      rgba(255, 255, 255, 0.2) 80%,
+      rgba(255, 255, 255, 0.5) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Liquid UI Button for Light Theme */
+  .liquid-button-light {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(250,251,255,0.7) 100%);
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.8), 0 1px 3px rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .liquid-button-light:hover {
+    box-shadow: inset 0 2px 4px rgba(255,255,255,1), 0 4px 10px rgba(0,0,0,0.04);
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(245,248,255,0.8) 100%);
+  }
+
+  .liquid-button-light[data-active="true"] {
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--primary) / 0.02) 100%);
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.9), 0 2px 8px hsl(var(--primary) / 0.1);
+    border: 1px solid hsl(var(--primary) / 0.2);
+    color: hsl(var(--primary));
+  }
+
+  /* Dark mode overrides for liquid buttons */
+  .dark .liquid-button-light {
+    background: transparent;
+    box-shadow: none;
+    border: 1px solid transparent;
+  }
+
+  .dark .liquid-button-light:hover {
+    background: hsl(var(--sidebar-accent));
+    box-shadow: none;
+    transform: translateY(0);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .dark .liquid-button-light[data-active="true"] {
+    background: hsl(var(--primary) / 0.12);
+    box-shadow: none;
+    border: 1px solid hsl(var(--primary) / 0.25);
+    color: hsl(var(--primary));
   }
 }

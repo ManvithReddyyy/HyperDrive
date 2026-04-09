@@ -33,14 +33,23 @@ export function SensitivityChart({ jobId }: { jobId: string }) {
   }, [jobId]);
 
   if (loading) {
-    return <div className="text-zinc-600">Loading sensitivity data...</div>;
+    return <div className="text-muted-foreground">Loading sensitivity data...</div>;
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="text-muted-foreground text-sm p-4 text-center">
+        <p className="font-medium">No sensitivity data available</p>
+        <p className="mt-1">Upload a model to see real layer-wise sensitivity analysis.</p>
+      </div>
+    );
   }
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const { layer, error } = payload[0].payload;
       return (
-        <div className="rounded bg-white border border-zinc-200 p-2 text-zinc-900 text-sm shadow-sm">
+        <div className="rounded bg-card border border-border p-2 text-card-foreground text-sm shadow-sm">
           <p className="font-medium">{layer}</p>
           <p>Error: {(error * 100).toFixed(2)}%</p>
         </div>
@@ -51,7 +60,7 @@ export function SensitivityChart({ jobId }: { jobId: string }) {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <h3 className="text-sm font-semibold text-zinc-900 mb-2">
+      <h3 className="text-sm font-semibold text-foreground mb-2">
         Layer-Wise Sensitivity
       </h3>
       <div className="flex-1 min-h-0">

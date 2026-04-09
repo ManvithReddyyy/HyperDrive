@@ -83,11 +83,11 @@ function Terminal({ logs }: { logs: string[] }) {
       data-testid="terminal"
     >
       {logs.length === 0 ? (
-        <span className="text-zinc-500">Waiting for logs...</span>
+        <span className="text-muted-foreground">Waiting for logs...</span>
       ) : (
         logs.map((log, i) => (
-          <div key={i} className="text-zinc-300 leading-relaxed whitespace-pre-wrap">
-            <span className="text-zinc-500 select-none mr-3">{String(i + 1).padStart(3, ' ')}</span>
+          <div key={i} className="text-foreground/80 leading-relaxed whitespace-pre-wrap">
+            <span className="text-muted-foreground select-none mr-3">{String(i + 1).padStart(3, ' ')}</span>
             {log}
           </div>
         ))

@@ -85,7 +85,7 @@ export function AutopilotLeaderboard({ jobId }: AutopilotLeaderboardProps) {
             <div className="border rounded-lg overflow-hidden">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-zinc-50 dark:bg-zinc-900/50">
+                        <TableRow className="bg-muted/30">
                             <TableHead className="font-medium">Strategy</TableHead>
                             <TableHead className="font-medium">
                                 <span className="flex items-center gap-1">
@@ -102,7 +102,7 @@ export function AutopilotLeaderboard({ jobId }: AutopilotLeaderboardProps) {
                             <TableRow
                                 key={trial.id}
                                 className={`
-                                    transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/50
+                                    transition-colors hover:bg-muted/50
                                     ${trial.recommended ? "bg-green-50 dark:bg-green-950/20 border-l-2 border-l-green-500" : ""}
                                 `}
                             >

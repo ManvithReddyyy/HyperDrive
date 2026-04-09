@@ -149,7 +149,7 @@ export function MemoryStressTest({ jobId }: MemoryStressTestProps) {
 
                 {/* Memory Stats */}
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/50">
+                    <div className="p-3 rounded-lg bg-muted/50">
                         <p className="text-xs text-muted-foreground mb-0.5">VRAM Usage</p>
                         {memoryData ? (
                             <div className="flex items-baseline gap-1">
@@ -162,7 +162,7 @@ export function MemoryStressTest({ jobId }: MemoryStressTestProps) {
                             <Skeleton className="h-7 w-20" />
                         )}
                     </div>
-                    <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/50">
+                    <div className="p-3 rounded-lg bg-muted/50">
                         <p className="text-xs text-muted-foreground mb-0.5">RAM Usage</p>
                         {memoryData ? (
                             <span className="text-xl font-semibold">{memoryData.peakRam} GB</span>

@@ -78,30 +78,72 @@ export class JobProcessor {
     private async processJob(job: any) {
         this.processingJobId = job.id;
         console.log(`Processing job ${job.id}...`);
+        const startTime = Date.now();
 
         try {
             // Update status to running and broadcast
             await this.updateAndBroadcast(job.id, { status: "running", progress: 0 });
-            await this.addLogAndBroadcast(job.id, "Job started. Initializing optimization pipeline...");
+            await this.addLogAndBroadcast(job.id, `$ hyperdrive optimize --job ${job.id.slice(0, 8)}`);
+            await this.addLogAndBroadcast(job.id, `[init] HyperDrive Optimization Engine v2.4.0`);
+            await this.addLogAndBroadcast(job.id, `[init] Target: ${job.config.targetDevice} | Strategy: ${job.config.strategy}`);
+            await this.addLogAndBroadcast(job.id, ``);
 
-            // Pipeline steps
-            await this.runStep(job.id, "Model Loading", 10, 1000, "Loading model architecture and weights...");
-            await this.runStep(job.id, "Validation", 20, 800, "Validating model graph compatibility...");
+            // Step 1: Model Loading
+            await this.runStep(job.id, "Model Loading", 10, 800,
+                `[load] Reading ${job.fileName} (${(job.fileSize / (1024 * 1024)).toFixed(1)} MB)`);
+            
+            const modelPath = `${process.cwd()}/backend/models/${job.id}_original`;
+            const fileExists = fs.existsSync(modelPath);
+            await this.addLogAndBroadcast(job.id, `[load] Model file: ${fileExists ? "found" : "MISSING"} at backend/models/${job.id.slice(0, 8)}_original`);
+            await this.addLogAndBroadcast(job.id, `[load] File size: ${job.fileSize.toLocaleString()} bytes`);
 
-            await this.addLogAndBroadcast(job.id, `Configuration: ${job.config.quantization} | ${job.config.targetDevice} | ${job.config.strategy}`);
+            // Step 2: Validation
+            await this.runStep(job.id, "Validation", 20, 600,
+                `[validate] Checking model graph compatibility...`);
+            await this.addLogAndBroadcast(job.id, `[validate] Format: ${job.fileName.endsWith('.onnx') ? 'ONNX' : 'PyTorch'} | Quantization: ${job.config.quantization}`);
+            await this.addLogAndBroadcast(job.id, ``);
 
-            // Call Python backend for actual optimization
-            await this.runStep(job.id, "Python Backend", 40, 500, "Connecting to ML optimization service...");
+            // Step 3: Python Backend Call
+            await this.addLogAndBroadcast(job.id, `[engine] Connecting to Python ML backend (localhost:8000)...`);
+            const step3Start = Date.now();
+            await this.runStep(job.id, "Python Backend", 40, 0, ``);
 
             const pythonResult = await this.callPythonBackend(job);
 
             if (!pythonResult) {
-                throw new Error("Python backend optimization failed");
+                throw new Error("Python backend optimization failed — no metrics returned");
             }
 
-            await this.runStep(job.id, "Graph Optimization", 50, 2000, "Fusing layers and optimizing operations...");
-            await this.runStep(job.id, "Quantization", 70, 3000, `Applying ${job.config.quantization} quantization...`);
-            await this.runStep(job.id, "Benchmarking", 90, 2000, "Running performance benchmarks on target device...");
+            const pythonDuration = ((Date.now() - step3Start) / 1000).toFixed(1);
+            await this.addLogAndBroadcast(job.id, `[engine] Backend responded in ${pythonDuration}s`);
+            await this.addLogAndBroadcast(job.id, ``);
+
+            // Step 4: Show real optimization results
+            await this.runStep(job.id, "Graph Optimization", 55, 500,
+                `[optimize] Running graph fusion and operator folding...`);
+            await this.addLogAndBroadcast(job.id, `[optimize] Layers fused: ${pythonResult.layers_fused}`);
+            await this.addLogAndBroadcast(job.id, `[optimize] Quantization type: ${pythonResult.quantization_type}`);
+            await this.addLogAndBroadcast(job.id, ``);
+
+            // Step 5: Quantization with real numbers
+            await this.runStep(job.id, "Quantization", 75, 500,
+                `[quant] Applying ${job.config.quantization} quantization...`);
+            await this.addLogAndBroadcast(job.id, `[quant] Original size: ${pythonResult.original_size_mb} MB`);
+            await this.addLogAndBroadcast(job.id, `[quant] Optimized size: ${pythonResult.optimized_size_mb} MB`);
+            await this.addLogAndBroadcast(job.id, `[quant] Size reduction: ${pythonResult.size_reduction_percent}%`);
+            await this.addLogAndBroadcast(job.id, `[quant] Accuracy drop: ${pythonResult.accuracy_drop_percent}%`);
+            await this.addLogAndBroadcast(job.id, ``);
+
+            // Step 6: Benchmark results
+            await this.runStep(job.id, "Benchmarking", 90, 500,
+                `[bench] Running inference benchmarks...`);
+            await this.addLogAndBroadcast(job.id, `[bench] Original latency:  ${pythonResult.original_latency_ms} ms`);
+            await this.addLogAndBroadcast(job.id, `[bench] Optimized latency: ${pythonResult.optimized_latency_ms} ms`);
+            await this.addLogAndBroadcast(job.id, `[bench] Speedup: ${pythonResult.latency_reduction_percent}%`);
+            await this.addLogAndBroadcast(job.id, `[bench] Throughput: ${pythonResult.inference_throughput} ops/sec`);
+            await this.addLogAndBroadcast(job.id, ``);
+
+            const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
 
             console.log(`Completing job ${job.id} with metrics:`, pythonResult);
 
@@ -123,11 +165,13 @@ export class JobProcessor {
 
             // Broadcast the completion
             await this.broadcast(job.id);
-            await this.addLogAndBroadcast(job.id, "Optimization completed successfully.");
+            await this.addLogAndBroadcast(job.id, `[done] ✓ Optimization completed in ${totalDuration}s`);
+            await this.addLogAndBroadcast(job.id, `[done] Job ${job.id.slice(0, 8)} finished successfully.`);
             console.log(`Job ${job.id} completed.`);
 
         } catch (error: any) {
             console.error(`Job ${job.id} failed:`, error);
+            await this.addLogAndBroadcast(job.id, `[error] ✗ ${error.message || "Unknown error"}`);
             await (storage as any).failJob(job.id, error.message || "Unknown error occurred");
             await this.broadcast(job.id);
         } finally {
@@ -137,21 +181,33 @@ export class JobProcessor {
 
     private async callPythonBackend(job: any): Promise<any> {
         try {
-            // Check if model file exists
-            if (!job.file_path || !fs.existsSync(job.file_path)) {
-                console.warn(`Model file not found for job ${job.id}, using mock metrics`);
-                return this.getMockMetrics(job);
+            // The upload route copies files to backend/models/{jobId}_original
+            const modelPath = `${process.cwd()}/backend/models/${job.id}_original`;
+            
+            // Fallback: also check job.filePath if the models dir copy doesn't exist
+            let actualPath = modelPath;
+            if (!fs.existsSync(actualPath)) {
+                if (job.filePath && fs.existsSync(job.filePath)) {
+                    actualPath = job.filePath;
+                    console.log(`[callPythonBackend] Using fallback filePath: ${actualPath}`);
+                } else {
+                    throw new Error(`Model file not found! Checked: ${modelPath} and filePath=${job.filePath}`);
+                }
             }
 
+            console.log(`[callPythonBackend] Job ${job.id}: reading from ${actualPath}, fileName=${job.fileName}`);
+            
             // Read model file
-            const modelBuffer = fs.readFileSync(job.file_path);
+            const modelBuffer = fs.readFileSync(actualPath);
+            console.log(`[callPythonBackend] Read ${modelBuffer.length} bytes`);
 
-            // Create FormData for file upload
+            // Create FormData for file upload — send with original filename so Python can detect format
             const formData = new FormData();
-            formData.append("model_file", new Blob([modelBuffer], { type: "application/octet-stream" }), job.file_name);
+            formData.append("model_file", new Blob([modelBuffer], { type: "application/octet-stream" }), job.fileName);
             formData.append("config", JSON.stringify(job.config || {}));
 
             // Call Python backend
+            console.log(`[callPythonBackend] Sending to ${PYTHON_BACKEND_URL}/api/jobs/${job.id}/optimize`);
             const response = await fetch(`${PYTHON_BACKEND_URL}/api/jobs/${job.id}/optimize`, {
                 method: "POST",
                 body: formData as any,
@@ -159,15 +215,15 @@ export class JobProcessor {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error(`Python backend error (${response.status}): ${errorText}`);
-                return this.getMockMetrics(job);
+                throw new Error(`Python backend error (${response.status}): ${errorText}`);
             }
 
             const metrics = await response.json();
+            console.log(`[callPythonBackend] SUCCESS — Python returned:`, metrics);
             return metrics;
         } catch (error) {
-            console.error(`Failed to call Python backend:`, error);
-            return this.getMockMetrics(job);
+            console.error(`[callPythonBackend] FAILED:`, error);
+            throw error;
         }
     }
 

@@ -22,11 +22,11 @@ interface GraphData {
 const CustomNode = ({ data }: { data: { label: string; fused?: boolean } }) => {
   const borderClass = data.fused
     ? "border-2 border-green-500"
-    : "border border-zinc-200";
+    : "border border-border";
 
   return (
     <div
-      className={`px-4 py-3 rounded bg-white ${borderClass} text-zinc-900 text-sm font-medium`}
+      className={`px-4 py-3 rounded bg-card ${borderClass} text-card-foreground text-sm font-medium`}
     >
       {data.label}
     </div>
@@ -56,15 +56,15 @@ export function ArchitectureGraph({ jobId }: { jobId: string }) {
   }, [jobId]);
 
   if (loading) {
-    return <div className="text-zinc-600">Loading architecture...</div>;
+    return <div className="text-muted-foreground">Loading architecture...</div>;
   }
 
   if (!graphData) {
-    return <div className="text-zinc-600">Failed to load graph data.</div>;
+    return <div className="text-muted-foreground">Failed to load graph data.</div>;
   }
 
   return (
-    <div className="w-full h-full bg-zinc-50 rounded border border-zinc-200 overflow-hidden">
+    <div className="w-full h-full bg-muted/30 rounded border border-border overflow-hidden">
       <ReactFlow
         nodes={graphData.nodes}
         edges={graphData.edges}

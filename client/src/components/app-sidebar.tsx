@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Plus, History, FlaskConical, Rocket, BarChart3, Database, Zap, Scale, Sparkles, Users } from "lucide-react";
+import { Plus, History, FlaskConical, Rocket, BarChart3, Database, Zap, Scale, Sparkles, Users, Leaf } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -34,19 +34,14 @@ const navItems = [
     icon: Scale,
   },
   {
-    title: "Insights",
-    url: "/insights",
-    icon: Sparkles,
-  },
-  {
     title: "Teams",
     url: "/teams",
     icon: Users,
   },
   {
-    title: "Playground",
+    title: "Impact Calculator",
     url: "/playground",
-    icon: FlaskConical,
+    icon: Leaf,
   },
   {
     title: "Analysis",
@@ -64,9 +59,9 @@ export function AppSidebar() {
   const [location] = useLocation();
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader className="px-4 py-4">
-        <Link href="/" data-testid="link-home">
+        <Link href="/dashboard" data-testid="link-home">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground hover:[&>svg]:rotate-180">
               <Zap className="h-5 w-5 text-background transition-transform duration-300" />
@@ -87,6 +82,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive}
+                      className="liquid-button-light"
                       data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                     >
                       <Link href={item.url}>

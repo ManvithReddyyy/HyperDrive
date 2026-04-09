@@ -104,7 +104,7 @@ export function DriftSimulator({ jobId }: DriftSimulatorProps) {
                 </div>
 
                 {/* Accuracy Display */}
-                <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/50">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                     <div>
                         <p className="text-xs text-muted-foreground mb-0.5">Projected Accuracy</p>
                         {driftData ? (

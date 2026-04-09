@@ -51,7 +51,7 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
           <Copy className="h-4 w-4" />
         )}
       </Button>
-      <pre className="h-full bg-[#1e1e1e] rounded-md p-4 overflow-auto font-mono text-xs text-zinc-300 scrollbar-thin">
+      <pre className="h-full bg-background rounded-md p-4 overflow-auto font-mono text-xs text-foreground/80 scrollbar-thin">
         <code data-testid={`code-${language}`}>{code}</code>
       </pre>
     </div>
@@ -108,7 +108,7 @@ export default function DeployPage() {
                   <Button 
                     size="sm" 
                     variant="outline"
-                    className="gap-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white"
+                    className="gap-2 liquid-glass-strong border border-green-500/40 text-green-600 dark:text-green-400 hover:bg-green-500/10"
                     onClick={() => window.open(`/api/jobs/${selectedJob.id}/download?format=pt`, '_blank')}
                   >
                     <Download className="h-4 w-4" />
@@ -116,7 +116,8 @@ export default function DeployPage() {
                   </Button>
                   <Button 
                     size="sm" 
-                    className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+                    variant="outline"
+                    className="gap-2 liquid-glass-strong border border-green-500/40 text-green-600 dark:text-green-400 hover:bg-green-500/10"
                     onClick={() => window.open(`/api/jobs/${selectedJob.id}/download`, '_blank')}
                   >
                     <Download className="h-4 w-4" />
@@ -151,10 +152,6 @@ export default function DeployPage() {
                 <Server className="h-3.5 w-3.5" />
                 Triton Server
               </TabsTrigger>
-              <TabsTrigger value="docker" className="gap-2" data-testid="tab-docker">
-                <Container className="h-3.5 w-3.5" />
-                Docker
-              </TabsTrigger>
             </TabsList>
 
             <div className="flex-1 min-h-0">
@@ -168,12 +165,6 @@ export default function DeployPage() {
                 <CodeBlock 
                   code={deployCode?.triton || "# Loading..."} 
                   language="triton"
-                />
-              </TabsContent>
-              <TabsContent value="docker" className="h-full mt-0">
-                <CodeBlock 
-                  code={deployCode?.docker || "# Loading..."} 
-                  language="docker"
                 />
               </TabsContent>
             </div>

@@ -1,121 +1,44 @@
 import { z } from "zod";
 
 export const quantizationOptions = [
-  // Integer Quantization
-  "INT8 Static",
-  "INT8 Dynamic",
-  "INT8 Per-Channel",
-  "INT8 Per-Tensor",
-  "INT4 AWQ",
-  "INT4 GPTQ",
-  "INT4 RTN",
-  "INT3 (Experimental)",
-  "INT2 (Ultra-Low)",
-  // Floating Point
-  "FP32 (Full Precision)",
-  "FP16 (Half Precision)",
-  "BF16 (Brain Float)",
-  "TF32 (Tensor Float)",
-  "FP8 E4M3",
-  "FP8 E5M2",
-  // Mixed Precision
-  "Mixed INT8/FP16",
-  "Mixed INT4/FP16",
-  "Mixed BF16/FP32",
-  "Auto Mixed Precision",
-  // Specialized
-  "QAT (Quantization Aware)",
-  "PTQ (Post-Training)",
-  "SmoothQuant",
-  "GGUF Q4_K_M",
-  "GGUF Q5_K_S",
+  // Each calls a DIFFERENT PyTorch API
+  "INT8 Dynamic",           // quantize_dynamic({Linear,Conv2d}, qint8)
+  "INT8 (Linear Only)",     // quantize_dynamic({Linear}, qint8) — Conv stays FP32
+  "FP16 (Half Precision)",  // model.half()
+  "BF16 (Brain Float)",     // model.bfloat16()
+  "FP32 (Full Precision)",  // no quantization — baseline
+  "Mixed INT8/FP16",        // half() + quantize_dynamic on Linears
+  "Aggressive INT8",        // quantize_dynamic + weight pruning (zero small weights)
 ] as const;
 
 export const targetDeviceOptions = [
-  // NVIDIA GPUs
-  "NVIDIA A100",
-  "NVIDIA H100",
-  "NVIDIA A10",
-  "NVIDIA T4",
-  "NVIDIA V100",
-  "NVIDIA L4",
-  "NVIDIA L40",
-  "NVIDIA RTX 4090",
-  "NVIDIA RTX 3090",
-  "NVIDIA Jetson Orin",
-  "NVIDIA Jetson Xavier",
-  // AMD GPUs
-  "AMD MI300X",
-  "AMD MI250X",
-  "AMD RX 7900 XTX",
-  "AMD ROCm Generic",
-  // Intel
-  "Intel Xeon (AVX-512)",
-  "Intel Core (AVX2)",
-  "Intel Arc A770",
-  "Intel Gaudi 2",
-  // Apple
-  "Apple M1/M2/M3",
-  "Apple Neural Engine",
-  // Cloud TPUs
-  "Google TPU v4",
-  "Google TPU v5e",
-  "AWS Inferentia2",
-  "AWS Trainium",
-  // Edge & Mobile
-  "Qualcomm Hexagon DSP",
-  "ARM Cortex-A (NEON)",
-  "Edge TPU (Coral)",
-  "Raspberry Pi 5",
-  // Runtimes
-  "ONNX Runtime CPU",
-  "ONNX Runtime CUDA",
-  "TensorRT",
-  "OpenVINO",
-  "TFLite",
+  // Each uses a DIFFERENT benchmark batch size and input resolution
+  "NVIDIA A100",            // batch=16, 224x224
+  "NVIDIA T4",              // batch=8, 224x224
+  "NVIDIA RTX 4090",        // batch=12, 224x224
+  "AMD MI300X",             // batch=16, 224x224
+  "Intel Xeon (AVX-512)",   // batch=4, 224x224
+  "Apple M-Series",         // batch=8, 192x192
+  "CPU Generic",            // batch=1, 224x224
+  "Platform Agnostic",      // Pure raw benchmark, batch=1, no multipliers
 ] as const;
 
 export const strategyOptions = [
-  // Performance
-  "Latency Focus",
-  "Throughput Focus",
-  "Batch Optimized",
-  "Real-Time Streaming",
-  "Low Latency P99",
-  // Quality
-  "Accuracy Focus",
-  "Quality Preserving",
-  "Perplexity Optimized",
-  "BLEU Score Focus",
-  // Balanced
-  "Balanced",
-  "Cost-Performance Balanced",
-  "Accuracy-Speed Tradeoff",
-  // Resource
-  "Memory Optimized",
-  "VRAM Minimized",
-  "Power Efficient",
-  "Energy Saving",
-  // Deployment
-  "Production Ready",
-  "Edge Deployment",
-  "Mobile Optimized",
-  "Serverless Ready",
-  // Specialized
-  "LLM Inference",
-  "Vision Transformer",
-  "Diffusion Models",
-  "Speech & Audio",
-  "Multimodal",
+  // Each modifies HOW the optimization runs
+  "Latency Focus",          // more warmup, min latency
+  "Throughput Focus",       // larger bench batch, measures ops/sec
+  "Balanced",               // default settings
+  "Accuracy Focus",         // less aggressive quant, lower accuracy drop
+  "Memory Optimized",       // smaller batch, prioritize size reduction
+  "Aggressive",             // max compression, prune + quantize
+  "Power Efficient",        // reduced precision + smaller batches
 ] as const;
 export const jobStatusOptions = ["pending", "running", "completed", "failed"] as const;
 
 export const pruningOptions = [
   "None",
-  "2:4 Structured Sparsity",
   "Unstructured (50%)",
   "Unstructured (75%)",
-  "Magnitude Pruning",
 ] as const;
 
 export const graphOptimizationOptions = [
@@ -128,6 +51,7 @@ export const optimizationConfigSchema = z.object({
   quantization: z.enum(quantizationOptions),
   targetDevice: z.enum(targetDeviceOptions),
   strategy: z.enum(strategyOptions),
+  optimizeForHardware: z.boolean().default(true),
   pruning: z.enum(pruningOptions).optional(),
   graphOptimization: z.enum(graphOptimizationOptions).optional(),
   knowledgeDistillation: z.boolean().optional(),

@@ -95,7 +95,7 @@ export function ThroughputBenchmark({ jobId }: ThroughputBenchmarkProps) {
 
                 {/* Stats */}
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/50">
+                    <div className="p-3 rounded-lg bg-muted/50">
                         <p className="text-xs text-muted-foreground mb-0.5">Throughput</p>
                         {data ? (
                             <div className="flex items-baseline gap-1">
@@ -108,7 +108,7 @@ export function ThroughputBenchmark({ jobId }: ThroughputBenchmarkProps) {
                             <Skeleton className="h-7 w-24" />
                         )}
                     </div>
-                    <div className="p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/50">
+                    <div className="p-3 rounded-lg bg-muted/50">
                         <p className="text-xs text-muted-foreground mb-0.5">Latency</p>
                         {data ? (
                             <div className="flex items-baseline gap-1">

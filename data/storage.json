@@ -139,6 +139,1969 @@
       "sizeReduction": 55,
       "createdAt": "2026-03-29T15:51:00.299Z",
       "completedAt": "2026-03-29T15:51:10.407Z"
+    },
+    "a47afa54-c473-4c45-9172-a2180a5f2767": {
+      "id": "a47afa54-c473-4c45-9172-a2180a5f2767",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA A100",
+        "strategy": "Latency Focus",
+        "pruning": "None",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 82978,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1030
+        },
+        {
+          "id": 488253,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 826
+        },
+        {
+          "id": 479715,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 503
+        },
+        {
+          "id": 920974,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2019
+        },
+        {
+          "id": 301694,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3005
+        },
+        {
+          "id": 515765,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2010
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 7,
+      "sizeReduction": 55,
+      "createdAt": "2026-03-30T04:36:13.846Z",
+      "completedAt": "2026-03-30T04:36:26.966Z"
+    },
+    "b04c7f49-9617-4dcb-a4f8-d7ce05a76d7c": {
+      "id": "b04c7f49-9617-4dcb-a4f8-d7ce05a76d7c",
+      "fileName": "mobilenet_v2_demo_optimized.pt",
+      "fileSize": 5242880,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA RTX 3090",
+        "strategy": "Latency Focus",
+        "pruning": "None",
+        "graphOptimization": "Level 2 (Extended)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA RTX 3090 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 305595,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1017
+        },
+        {
+          "id": 897526,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 814
+        },
+        {
+          "id": 379409,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 513
+        },
+        {
+          "id": 597382,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2007
+        },
+        {
+          "id": 876991,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3013
+        },
+        {
+          "id": 759228,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2003
+        }
+      ],
+      "originalLatency": 60,
+      "optimizedLatency": 34,
+      "sizeReduction": 55,
+      "createdAt": "2026-03-30T05:47:50.745Z",
+      "completedAt": "2026-03-30T05:48:05.101Z"
+    },
+    "049851b9-3e6c-499e-9bff-79cbea84b558": {
+      "id": "049851b9-3e6c-499e-9bff-79cbea84b558",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA A100",
+        "strategy": "VRAM Minimized",
+        "pruning": "2:4 Structured Sparsity",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | VRAM Minimized",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 283094,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1010
+        },
+        {
+          "id": 317079,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 806
+        },
+        {
+          "id": 212005,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 512
+        },
+        {
+          "id": 525867,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2008
+        },
+        {
+          "id": 398992,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3009
+        },
+        {
+          "id": 893096,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2013
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 5,
+      "sizeReduction": 70,
+      "createdAt": "2026-04-02T00:35:22.116Z",
+      "completedAt": "2026-04-02T00:35:35.187Z"
+    },
+    "914ead40-cbd5-4255-9c9e-4b5074b834ca": {
+      "id": "914ead40-cbd5-4255-9c9e-4b5074b834ca",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA A100",
+        "strategy": "Latency Focus",
+        "pruning": "None",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 673479,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1031
+        },
+        {
+          "id": 487713,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 805
+        },
+        {
+          "id": 455040,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 513
+        },
+        {
+          "id": 595419,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2002
+        },
+        {
+          "id": 96627,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3007
+        },
+        {
+          "id": 232809,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2016
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 7,
+      "sizeReduction": 55,
+      "createdAt": "2026-04-02T07:19:03.119Z",
+      "completedAt": "2026-04-02T07:19:13.083Z"
+    },
+    "34892f04-ffda-4b5d-937c-6cfe530b1658": {
+      "id": "34892f04-ffda-4b5d-937c-6cfe530b1658",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "AMD MI300X",
+        "strategy": "Latency Focus",
+        "pruning": "None",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | AMD MI300X | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 687874,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1007
+        },
+        {
+          "id": 852259,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 824
+        },
+        {
+          "id": 926006,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 511
+        },
+        {
+          "id": 272289,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2003
+        },
+        {
+          "id": 829928,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3005
+        },
+        {
+          "id": 364599,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2007
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 8,
+      "sizeReduction": 55,
+      "createdAt": "2026-04-02T08:03:32.376Z",
+      "completedAt": "2026-04-02T08:03:42.466Z"
+    },
+    "51b36c4f-17d4-4a0b-9ddf-38540c80f080": {
+      "id": "51b36c4f-17d4-4a0b-9ddf-38540c80f080",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA A100",
+        "strategy": "Latency Focus",
+        "pruning": "None",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 556534,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1010
+        },
+        {
+          "id": 521259,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 808
+        },
+        {
+          "id": 609085,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 511
+        },
+        {
+          "id": 86383,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2008
+        },
+        {
+          "id": 240651,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3015
+        },
+        {
+          "id": 29859,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2006
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 7,
+      "sizeReduction": 55,
+      "createdAt": "2026-04-09T04:37:57.156Z",
+      "completedAt": "2026-04-09T04:38:06.605Z"
+    },
+    "4a1ab85a-0e0a-41e2-8bdd-a2bdaf1ae423": {
+      "id": "4a1ab85a-0e0a-41e2-8bdd-a2bdaf1ae423",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "targetDevice": "NVIDIA A100",
+        "strategy": "Latency Focus",
+        "pruning": "None",
+        "graphOptimization": "Level 3 (All - Fusion + Fold)",
+        "knowledgeDistillation": false,
+        "kernelAutoTuning": true
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 865536,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1009
+        },
+        {
+          "id": 775301,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 806
+        },
+        {
+          "id": 254877,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 511
+        },
+        {
+          "id": 759583,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2008
+        },
+        {
+          "id": 697686,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3003
+        },
+        {
+          "id": 652502,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2009
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 7,
+      "sizeReduction": 55,
+      "createdAt": "2026-04-09T04:57:55.754Z",
+      "completedAt": "2026-04-09T04:58:07.855Z"
+    },
+    "b2102634-0eac-4ffe-90ed-553b52caabd2": {
+      "id": "b2102634-0eac-4ffe-90ed-553b52caabd2",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 732259,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1004
+        },
+        {
+          "id": 273138,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 807
+        },
+        {
+          "id": 980381,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 512
+        },
+        {
+          "id": 132165,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2002
+        },
+        {
+          "id": 19363,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3002
+        },
+        {
+          "id": 802700,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2009
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 7,
+      "sizeReduction": 55,
+      "createdAt": "2026-04-09T05:03:32.447Z",
+      "completedAt": "2026-04-09T05:03:42.614Z"
+    },
+    "3fa78335-47a3-420e-81b2-d42f99622ff0": {
+      "id": "3fa78335-47a3-420e-81b2-d42f99622ff0",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 79773,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1008
+        },
+        {
+          "id": 69736,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 809
+        },
+        {
+          "id": 676605,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 920056,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2004
+        },
+        {
+          "id": 623012,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3007
+        },
+        {
+          "id": 523173,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2003
+        }
+      ],
+      "originalLatency": 15,
+      "optimizedLatency": 7,
+      "sizeReduction": 55,
+      "createdAt": "2026-04-09T05:15:35.914Z",
+      "completedAt": "2026-04-09T05:15:48.129Z"
+    },
+    "9c9a458e-1781-4037-aac2-6249bc983fb7": {
+      "id": "9c9a458e-1781-4037-aac2-6249bc983fb7",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "failed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 40,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "ERROR: Python backend error (500): {\"detail\":\"Tried to serialize object __torch__.torchvision.models.mobilenetv2.MobileNetV2 which does not have a __getstate__ method defined!\"}"
+      ],
+      "pipelineSteps": [
+        {
+          "id": 528168,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1009
+        },
+        {
+          "id": 881328,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 809
+        },
+        {
+          "id": 965627,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 517
+        }
+      ],
+      "createdAt": "2026-04-09T05:19:27.814Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\7fac95c13830eaa1f3fc7ff86d7d143f"
+    },
+    "de6956d1-6f16-49e1-ad98-b1992aa18907": {
+      "id": "de6956d1-6f16-49e1-ad98-b1992aa18907",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 826949,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1006
+        },
+        {
+          "id": 910366,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 809
+        },
+        {
+          "id": 781202,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 993343,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2015
+        },
+        {
+          "id": 294771,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3005
+        },
+        {
+          "id": 70286,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2005
+        }
+      ],
+      "originalLatency": 9.27,
+      "optimizedLatency": 4.19,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T05:23:20.554Z",
+      "completedAt": "2026-04-09T05:23:34.247Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\6fb424875094de4b6bc8593a1d458f3d"
+    },
+    "e9a7e633-edac-4bc8-85a9-da428d517986": {
+      "id": "e9a7e633-edac-4bc8-85a9-da428d517986",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 441905,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1012
+        },
+        {
+          "id": 924732,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 804
+        },
+        {
+          "id": 913263,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 870813,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2003
+        },
+        {
+          "id": 45710,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3004
+        },
+        {
+          "id": 175559,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2002
+        }
+      ],
+      "originalLatency": 13.69,
+      "optimizedLatency": 8.34,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T05:24:48.071Z",
+      "completedAt": "2026-04-09T05:24:59.601Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\190a47f2e717214e72c4a4ec293f71de"
+    },
+    "728686ed-8885-4f77-a738-683c9fd56ab5": {
+      "id": "728686ed-8885-4f77-a738-683c9fd56ab5",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "Job started. Initializing optimization pipeline...",
+        "Loading model architecture and weights...",
+        "Validating model graph compatibility...",
+        "Configuration: INT8 Dynamic | NVIDIA A100 | Latency Focus",
+        "Connecting to ML optimization service...",
+        "Fusing layers and optimizing operations...",
+        "Applying INT8 Dynamic quantization...",
+        "Running performance benchmarks on target device...",
+        "Optimization completed successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 562332,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 1011
+        },
+        {
+          "id": 985262,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 814
+        },
+        {
+          "id": 269520,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 512
+        },
+        {
+          "id": 908481,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 2000
+        },
+        {
+          "id": 207104,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 3002
+        },
+        {
+          "id": 916743,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 2006
+        }
+      ],
+      "originalLatency": 14.66,
+      "optimizedLatency": 8.56,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T05:28:48.609Z",
+      "completedAt": "2026-04-09T05:29:00.222Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\b901eb2305574691f9a9edb9bda2d489"
+    },
+    "0e6b04a8-2c64-46c9-abb9-670ce48c21f1": {
+      "id": "0e6b04a8-2c64-46c9-abb9-670ce48c21f1",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job 0e6b04a8",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading mobilenet_v2_demo.pt (13.9 MB)",
+        "[load] Model file: found at backend/models/0e6b04a8_original",
+        "[load] File size: 1,45,44,987 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 Dynamic",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.0s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 3",
+        "[optimize] Quantization type: INT8 Dynamic",
+        "",
+        "[quant] Applying INT8 Dynamic quantization...",
+        "[quant] Original size: 13.87 MB",
+        "[quant] Optimized size: 13.9 MB",
+        "[quant] Size reduction: -0.21%",
+        "[quant] Accuracy drop: 0.75%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  11.82 ms",
+        "[bench] Optimized latency: 6.98 ms",
+        "[bench] Speedup: 40.93%",
+        "[bench] Throughput: 143.26 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 3.9s",
+        "[done] Job 0e6b04a8 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 443473,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 808
+        },
+        {
+          "id": 339237,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 612
+        },
+        {
+          "id": 595919,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 5
+        },
+        {
+          "id": 607135,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 508
+        },
+        {
+          "id": 108570,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 548853,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 513
+        }
+      ],
+      "originalLatency": 11.82,
+      "optimizedLatency": 6.98,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T05:29:48.992Z",
+      "completedAt": "2026-04-09T05:29:54.645Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\02eace8fac9fd59190c9b9f128e640f2"
+    },
+    "d4500c33-4dcf-4dd9-b83d-7e308fd29c9c": {
+      "id": "d4500c33-4dcf-4dd9-b83d-7e308fd29c9c",
+      "fileName": "hyperdrive_test_model.pt",
+      "fileSize": 5681287,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job d4500c33",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading hyperdrive_test_model.pt (5.4 MB)",
+        "[load] Model file: found at backend/models/d4500c33_original",
+        "[load] File size: 56,81,287 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 Dynamic",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.4s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 7",
+        "[optimize] Quantization type: INT8 Dynamic",
+        "",
+        "[quant] Applying INT8 Dynamic quantization...",
+        "[quant] Original size: 5.42 MB",
+        "[quant] Optimized size: 4.66 MB",
+        "[quant] Size reduction: 14.03%",
+        "[quant] Accuracy drop: 0.67%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  47.11 ms",
+        "[bench] Optimized latency: 42.19 ms",
+        "[bench] Speedup: 10.43%",
+        "[bench] Throughput: 23.7 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 4.3s",
+        "[done] Job d4500c33 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 158631,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 807
+        },
+        {
+          "id": 232964,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 601
+        },
+        {
+          "id": 978389,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 15
+        },
+        {
+          "id": 582036,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 512
+        },
+        {
+          "id": 459336,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 516
+        },
+        {
+          "id": 21494,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 513
+        }
+      ],
+      "originalLatency": 47.11,
+      "optimizedLatency": 42.19,
+      "sizeReduction": 14.03,
+      "createdAt": "2026-04-09T05:38:13.489Z",
+      "completedAt": "2026-04-09T05:38:21.601Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\ad46ce0d5af1021846f77a0d19a1f402"
+    },
+    "eb1fbfc0-55b3-4007-bf94-c1c9b5349998": {
+      "id": "eb1fbfc0-55b3-4007-bf94-c1c9b5349998",
+      "fileName": "hyperdrive_test_model.pt",
+      "fileSize": 5681287,
+      "status": "completed",
+      "config": {
+        "quantization": "FP16 (Half Precision)",
+        "strategy": "Balanced",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job eb1fbfc0",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Balanced",
+        "",
+        "[load] Reading hyperdrive_test_model.pt (5.4 MB)",
+        "[load] Model file: found at backend/models/eb1fbfc0_original",
+        "[load] File size: 56,81,287 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: FP16 (Half Precision)",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.3s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 5",
+        "[optimize] Quantization type: FP16 (Half Precision)",
+        "",
+        "[quant] Applying FP16 (Half Precision) quantization...",
+        "[quant] Original size: 5.42 MB",
+        "[quant] Optimized size: 5.41 MB",
+        "[quant] Size reduction: 0.1%",
+        "[quant] Accuracy drop: 0.27%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  45.08 ms",
+        "[bench] Optimized latency: 47.28 ms",
+        "[bench] Speedup: 0%",
+        "[bench] Throughput: 21.15 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 4.2s",
+        "[done] Job eb1fbfc0 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 932377,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 807
+        },
+        {
+          "id": 598973,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 607
+        },
+        {
+          "id": 60133,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 14
+        },
+        {
+          "id": 351105,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 508
+        },
+        {
+          "id": 918453,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 513
+        },
+        {
+          "id": 58670,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 514
+        }
+      ],
+      "originalLatency": 45.08,
+      "optimizedLatency": 47.28,
+      "sizeReduction": 0.1,
+      "createdAt": "2026-04-09T05:38:47.055Z",
+      "completedAt": "2026-04-09T05:38:55.874Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\c71989807068258fe3eddcd330ca95bf"
+    },
+    "cfe9dd22-9e9e-46b4-a3a4-dd0dab7663d1": {
+      "id": "cfe9dd22-9e9e-46b4-a3a4-dd0dab7663d1",
+      "fileName": "hyperdrive_test_model.pt",
+      "fileSize": 5681287,
+      "status": "completed",
+      "config": {
+        "quantization": "FP32 (No Quantization)",
+        "strategy": "Accuracy Focus",
+        "targetDevice": "CPU Generic",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job cfe9dd22",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: CPU Generic | Strategy: Accuracy Focus",
+        "",
+        "[load] Reading hyperdrive_test_model.pt (5.4 MB)",
+        "[load] Model file: found at backend/models/cfe9dd22_original",
+        "[load] File size: 56,81,287 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: FP32 (No Quantization)",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.4s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 7",
+        "[optimize] Quantization type: FP32 (No Quantization)",
+        "",
+        "[quant] Applying FP32 (No Quantization) quantization...",
+        "[quant] Original size: 5.42 MB",
+        "[quant] Optimized size: 5.41 MB",
+        "[quant] Size reduction: 0.1%",
+        "[quant] Accuracy drop: 0%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  47.1 ms",
+        "[bench] Optimized latency: 53.08 ms",
+        "[bench] Speedup: 0%",
+        "[bench] Throughput: 18.84 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 4.3s",
+        "[done] Job cfe9dd22 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 871259,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 808
+        },
+        {
+          "id": 191698,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 603
+        },
+        {
+          "id": 279384,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 15
+        },
+        {
+          "id": 588994,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 503
+        },
+        {
+          "id": 141731,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 511
+        },
+        {
+          "id": 280837,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 514
+        }
+      ],
+      "originalLatency": 47.1,
+      "optimizedLatency": 53.08,
+      "sizeReduction": 0.1,
+      "createdAt": "2026-04-09T05:39:07.721Z",
+      "completedAt": "2026-04-09T05:39:15.195Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\f73a05d7397c440e81babbb652b13ce7"
+    },
+    "47c8a40e-0c09-4906-ad5f-fad87d36b153": {
+      "id": "47c8a40e-0c09-4906-ad5f-fad87d36b153",
+      "fileName": "hyperdrive_test_model.pt",
+      "fileSize": 5681287,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job 47c8a40e",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading hyperdrive_test_model.pt (5.4 MB)",
+        "[load] Model file: found at backend/models/47c8a40e_original",
+        "[load] File size: 56,81,287 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 Dynamic",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.4s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 7",
+        "[optimize] Quantization type: INT8 Dynamic",
+        "",
+        "[quant] Applying INT8 Dynamic quantization...",
+        "[quant] Original size: 5.42 MB",
+        "[quant] Optimized size: 4.66 MB",
+        "[quant] Size reduction: 14.03%",
+        "[quant] Accuracy drop: 0.61%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  47.73 ms",
+        "[bench] Optimized latency: 41.23 ms",
+        "[bench] Speedup: 13.61%",
+        "[bench] Throughput: 24.25 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 4.3s",
+        "[done] Job 47c8a40e finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 576358,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 808
+        },
+        {
+          "id": 376101,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 608
+        },
+        {
+          "id": 294784,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 4
+        },
+        {
+          "id": 705798,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 510
+        },
+        {
+          "id": 969559,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 514
+        },
+        {
+          "id": 656235,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 509
+        }
+      ],
+      "originalLatency": 47.73,
+      "optimizedLatency": 41.23,
+      "sizeReduction": 14.03,
+      "createdAt": "2026-04-09T05:43:03.711Z",
+      "completedAt": "2026-04-09T05:43:09.954Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\4ecb80306a1d5fc83f34eae9700c4ff5"
+    },
+    "ac84dde0-6b7d-47e7-b6ff-ae5fefe8413d": {
+      "id": "ac84dde0-6b7d-47e7-b6ff-ae5fefe8413d",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "FP16 (Half Precision)",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job ac84dde0",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading mobilenet_v2_demo.pt (13.9 MB)",
+        "[load] Model file: found at backend/models/ac84dde0_original",
+        "[load] File size: 1,45,44,987 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: FP16 (Half Precision)",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.0s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 6",
+        "[optimize] Quantization type: FP16 (Half Precision)",
+        "",
+        "[quant] Applying FP16 (Half Precision) quantization...",
+        "[quant] Original size: 13.87 MB",
+        "[quant] Optimized size: 13.9 MB",
+        "[quant] Size reduction: -0.21%",
+        "[quant] Accuracy drop: 0.27%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  12.97 ms",
+        "[bench] Optimized latency: 7.78 ms",
+        "[bench] Speedup: 40.01%",
+        "[bench] Throughput: 128.53 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 4.0s",
+        "[done] Job ac84dde0 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 765362,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 808
+        },
+        {
+          "id": 218798,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 615
+        },
+        {
+          "id": 598706,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 4
+        },
+        {
+          "id": 350000,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 502
+        },
+        {
+          "id": 433990,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 70452,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 513
+        }
+      ],
+      "originalLatency": 12.97,
+      "optimizedLatency": 7.78,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T05:55:03.119Z",
+      "completedAt": "2026-04-09T05:55:10.208Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\d1c279b0c2ac58e2fd9a265ae957d2a2"
+    },
+    "47ebaac1-8166-449e-9699-847487ce6a14": {
+      "id": "47ebaac1-8166-449e-9699-847487ce6a14",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job 47ebaac1",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading mobilenet_v2_demo.pt (13.9 MB)",
+        "[load] Model file: found at backend/models/47ebaac1_original",
+        "[load] File size: 1,45,44,987 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 Dynamic",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 0.9s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 6",
+        "[optimize] Quantization type: INT8 Dynamic",
+        "",
+        "[quant] Applying INT8 Dynamic quantization...",
+        "[quant] Original size: 13.87 MB",
+        "[quant] Optimized size: 13.9 MB",
+        "[quant] Size reduction: -0.21%",
+        "[quant] Accuracy drop: 1.03%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  13.4 ms",
+        "[bench] Optimized latency: 5.21 ms",
+        "[bench] Speedup: 61.13%",
+        "[bench] Throughput: 191.96 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 3.9s",
+        "[done] Job 47ebaac1 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 248264,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 802
+        },
+        {
+          "id": 832512,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 604
+        },
+        {
+          "id": 826092,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 5
+        },
+        {
+          "id": 359524,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 510
+        },
+        {
+          "id": 76191,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 512
+        },
+        {
+          "id": 247063,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 510
+        }
+      ],
+      "originalLatency": 13.4,
+      "optimizedLatency": 5.21,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T06:22:29.352Z",
+      "completedAt": "2026-04-09T06:22:36.189Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\c26183176180d3acd98832d164dac722"
+    },
+    "3ea14d34-2244-4328-aeca-0ae3f68d1a2b": {
+      "id": "3ea14d34-2244-4328-aeca-0ae3f68d1a2b",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 (Linear Only)",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job 3ea14d34",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading mobilenet_v2_demo.pt (13.9 MB)",
+        "[load] Model file: found at backend/models/3ea14d34_original",
+        "[load] File size: 1,45,44,987 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 (Linear Only)",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 0.9s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 5",
+        "[optimize] Quantization type: INT8 (Linear Only)",
+        "",
+        "[quant] Applying INT8 (Linear Only) quantization...",
+        "[quant] Original size: 13.87 MB",
+        "[quant] Optimized size: 13.9 MB",
+        "[quant] Size reduction: -0.21%",
+        "[quant] Accuracy drop: 1.41%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  12.49 ms",
+        "[bench] Optimized latency: 4.3 ms",
+        "[bench] Speedup: 65.59%",
+        "[bench] Throughput: 232.69 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 3.9s",
+        "[done] Job 3ea14d34 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 944655,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 812
+        },
+        {
+          "id": 956818,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 604
+        },
+        {
+          "id": 9620,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 5
+        },
+        {
+          "id": 857424,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 506
+        },
+        {
+          "id": 940473,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 516
+        },
+        {
+          "id": 165687,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 513
+        }
+      ],
+      "originalLatency": 12.49,
+      "optimizedLatency": 4.3,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T06:28:53.118Z",
+      "completedAt": "2026-04-09T06:29:00.677Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\a50e5a93e0b8ebff6e77af2d61c0fe5b"
+    },
+    "bedf5abb-31d9-434a-831b-291ff391ef70": {
+      "id": "bedf5abb-31d9-434a-831b-291ff391ef70",
+      "fileName": "hyperdrive_test_model.pt",
+      "fileSize": 5681287,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job bedf5abb",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading hyperdrive_test_model.pt (5.4 MB)",
+        "[load] Model file: found at backend/models/bedf5abb_original",
+        "[load] File size: 56,81,287 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 Dynamic",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.6s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 6",
+        "[optimize] Quantization type: INT8 Dynamic",
+        "",
+        "[quant] Applying INT8 Dynamic quantization...",
+        "[quant] Original size: 5.42 MB",
+        "[quant] Optimized size: 4.66 MB",
+        "[quant] Size reduction: 14.03%",
+        "[quant] Accuracy drop: 1.25%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  47.82 ms",
+        "[bench] Optimized latency: 45.78 ms",
+        "[bench] Speedup: 4.27%",
+        "[bench] Throughput: 21.84 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 4.6s",
+        "[done] Job bedf5abb finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 753915,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 809
+        },
+        {
+          "id": 347993,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 607
+        },
+        {
+          "id": 919662,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 5
+        },
+        {
+          "id": 530325,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 367203,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 512
+        },
+        {
+          "id": 475306,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 513
+        }
+      ],
+      "originalLatency": 47.82,
+      "optimizedLatency": 45.78,
+      "sizeReduction": 14.03,
+      "createdAt": "2026-04-09T06:33:22.203Z",
+      "completedAt": "2026-04-09T06:33:30.675Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\bda9eaf3f1cbd90dd575b5412bafa324"
+    },
+    "ed35a5b7-b2c9-462e-ac5c-9777693a7487": {
+      "id": "ed35a5b7-b2c9-462e-ac5c-9777693a7487",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job ed35a5b7",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading mobilenet_v2_demo.pt (13.9 MB)",
+        "[load] Model file: found at backend/models/ed35a5b7_original",
+        "[load] File size: 1,45,44,987 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 Dynamic",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.1s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 7",
+        "[optimize] Quantization type: INT8 Dynamic",
+        "",
+        "[quant] Applying INT8 Dynamic quantization...",
+        "[quant] Original size: 13.87 MB",
+        "[quant] Optimized size: 13.9 MB",
+        "[quant] Size reduction: -0.21%",
+        "[quant] Accuracy drop: 1.1%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  10.96 ms",
+        "[bench] Optimized latency: 4.54 ms",
+        "[bench] Speedup: 58.56%",
+        "[bench] Throughput: 220.19 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 4.0s",
+        "[done] Job ed35a5b7 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 262680,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 808
+        },
+        {
+          "id": 730177,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 607
+        },
+        {
+          "id": 561754,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 7
+        },
+        {
+          "id": 165546,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 502
+        },
+        {
+          "id": 204056,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 518
+        },
+        {
+          "id": 409247,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 509
+        }
+      ],
+      "originalLatency": 10.96,
+      "optimizedLatency": 4.54,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T06:38:23.170Z",
+      "completedAt": "2026-04-09T06:38:30.221Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\4e51db2de3e4cb69599689b597b130ec"
+    },
+    "0802fa6b-7376-4786-98f7-ea61510dbf19": {
+      "id": "0802fa6b-7376-4786-98f7-ea61510dbf19",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "INT8 Dynamic",
+        "strategy": "Latency Focus",
+        "targetDevice": "Platform Agnostic",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job 0802fa6b",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: Platform Agnostic | Strategy: Latency Focus",
+        "",
+        "[load] Reading mobilenet_v2_demo.pt (13.9 MB)",
+        "[load] Model file: found at backend/models/0802fa6b_original",
+        "[load] File size: 1,45,44,987 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: INT8 Dynamic",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 1.0s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 6",
+        "[optimize] Quantization type: INT8 Dynamic",
+        "",
+        "[quant] Applying INT8 Dynamic quantization...",
+        "[quant] Original size: 13.87 MB",
+        "[quant] Optimized size: 13.9 MB",
+        "[quant] Size reduction: -0.21%",
+        "[quant] Accuracy drop: 1.04%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  11.9 ms",
+        "[bench] Optimized latency: 6.24 ms",
+        "[bench] Speedup: 47.52%",
+        "[bench] Throughput: 160.17 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 3.9s",
+        "[done] Job 0802fa6b finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 283395,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 810
+        },
+        {
+          "id": 554403,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 603
+        },
+        {
+          "id": 958230,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 8
+        },
+        {
+          "id": 396131,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 530595,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 515
+        },
+        {
+          "id": 488271,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 512
+        }
+      ],
+      "originalLatency": 11.9,
+      "optimizedLatency": 6.24,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T06:38:58.083Z",
+      "completedAt": "2026-04-09T06:39:04.213Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\8c9295e085d2605cc7bfdddf7430ecd8"
+    },
+    "67e875a1-7b0a-413e-8f86-196de50ba004": {
+      "id": "67e875a1-7b0a-413e-8f86-196de50ba004",
+      "fileName": "mobilenet_v2_demo.pt",
+      "fileSize": 14544987,
+      "status": "completed",
+      "config": {
+        "quantization": "FP16 (Half Precision)",
+        "strategy": "Latency Focus",
+        "targetDevice": "NVIDIA A100",
+        "calibrationSamples": 100
+      },
+      "progress": 100,
+      "logs": [
+        "$ hyperdrive optimize --job 67e875a1",
+        "[init] HyperDrive Optimization Engine v2.4.0",
+        "[init] Target: NVIDIA A100 | Strategy: Latency Focus",
+        "",
+        "[load] Reading mobilenet_v2_demo.pt (13.9 MB)",
+        "[load] Model file: found at backend/models/67e875a1_original",
+        "[load] File size: 1,45,44,987 bytes",
+        "[validate] Checking model graph compatibility...",
+        "[validate] Format: PyTorch | Quantization: FP16 (Half Precision)",
+        "",
+        "[engine] Connecting to Python ML backend (localhost:8000)...",
+        "",
+        "[engine] Backend responded in 0.9s",
+        "",
+        "[optimize] Running graph fusion and operator folding...",
+        "[optimize] Layers fused: 7",
+        "[optimize] Quantization type: FP16 (Half Precision)",
+        "",
+        "[quant] Applying FP16 (Half Precision) quantization...",
+        "[quant] Original size: 13.87 MB",
+        "[quant] Optimized size: 13.9 MB",
+        "[quant] Size reduction: -0.21%",
+        "[quant] Accuracy drop: 0.19%",
+        "",
+        "[bench] Running inference benchmarks...",
+        "[bench] Original latency:  11.65 ms",
+        "[bench] Optimized latency: 6.42 ms",
+        "[bench] Speedup: 44.93%",
+        "[bench] Throughput: 155.88 ops/sec",
+        "",
+        "[done] ✓ Optimization completed in 3.8s",
+        "[done] Job 67e875a1 finished successfully."
+      ],
+      "pipelineSteps": [
+        {
+          "id": 315768,
+          "name": "Model Loading",
+          "status": "completed",
+          "duration": 809
+        },
+        {
+          "id": 672671,
+          "name": "Validation",
+          "status": "completed",
+          "duration": 605
+        },
+        {
+          "id": 956993,
+          "name": "Python Backend",
+          "status": "completed",
+          "duration": 1
+        },
+        {
+          "id": 630914,
+          "name": "Graph Optimization",
+          "status": "completed",
+          "duration": 517
+        },
+        {
+          "id": 169952,
+          "name": "Quantization",
+          "status": "completed",
+          "duration": 514
+        },
+        {
+          "id": 611417,
+          "name": "Benchmarking",
+          "status": "completed",
+          "duration": 512
+        }
+      ],
+      "originalLatency": 11.65,
+      "optimizedLatency": 6.42,
+      "sizeReduction": -0.21,
+      "createdAt": "2026-04-09T06:41:19.641Z",
+      "completedAt": "2026-04-09T06:41:28.303Z",
+      "filePath": "M:\\coding_environment\\HyperDrive\\uploads\\956c8f8aab67a0bf27fa0b26d3372391"
     }
   },
   "users": {},

@@ -26,7 +26,7 @@ interface NutritionLabelProps {
 
 function NutritionRow({ label, value, icon: Icon }: { label: string; value: string; icon?: React.ComponentType<{ className?: string }> }) {
     return (
-        <div className="flex items-center justify-between py-2 border-b border-zinc-200 dark:border-zinc-700 last:border-b-0">
+        <div className="flex items-center justify-between py-2 border-b border-border last:border-b-0">
             <span className="text-sm text-muted-foreground flex items-center gap-2">
                 {Icon && <Icon className="h-3.5 w-3.5" />}
                 {label}
@@ -76,22 +76,22 @@ export function NutritionLabel({ jobId }: NutritionLabelProps) {
     };
 
     return (
-        <div className="bg-white dark:bg-zinc-950 border-2 border-zinc-900 dark:border-zinc-100 rounded-lg overflow-hidden max-w-sm">
+        <div className="bg-card border-2 border-foreground/80 rounded-lg overflow-hidden max-w-sm">
             {/* Header */}
-            <div className="bg-zinc-900 dark:bg-zinc-100 px-4 py-3">
-                <h2 className="text-xl font-black text-white dark:text-zinc-900 tracking-tight">
+            <div className="bg-foreground/90 px-4 py-3">
+                <h2 className="text-xl font-black text-background tracking-tight">
                     AI FACTS
                 </h2>
             </div>
 
             {/* Model Name */}
-            <div className="px-4 pt-4 pb-2 border-b-4 border-zinc-900 dark:border-zinc-100">
+            <div className="px-4 pt-4 pb-2 border-b-4 border-foreground/80">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">Model</p>
                 <p className="text-lg font-bold truncate">{data.modelName}</p>
             </div>
 
             {/* Main Stats */}
-            <div className="px-4 py-3 border-b border-zinc-300 dark:border-zinc-600">
+            <div className="px-4 py-3 border-b border-border">
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <p className="text-xs text-muted-foreground">Parameters</p>
@@ -106,7 +106,7 @@ export function NutritionLabel({ jobId }: NutritionLabelProps) {
 
             {/* Details Section */}
             <div className="px-4 py-2">
-                <p className="text-xs font-bold uppercase tracking-wider mb-2 text-zinc-500">
+                <p className="text-xs font-bold uppercase tracking-wider mb-2 text-muted-foreground">
                     Optimization Details
                 </p>
                 <NutritionRow label="Quantization" value={data.quantization} icon={Scale} />
@@ -117,8 +117,8 @@ export function NutritionLabel({ jobId }: NutritionLabelProps) {
             </div>
 
             {/* Provenance Section */}
-            <div className="px-4 py-2 bg-zinc-50 dark:bg-zinc-900/50">
-                <p className="text-xs font-bold uppercase tracking-wider mb-2 text-zinc-500">
+            <div className="px-4 py-2 bg-muted/30">
+                <p className="text-xs font-bold uppercase tracking-wider mb-2 text-muted-foreground">
                     Provenance & Compliance
                 </p>
                 <NutritionRow label="License" value={data.license} icon={FileCode} />
@@ -127,8 +127,8 @@ export function NutritionLabel({ jobId }: NutritionLabelProps) {
             </div>
 
             {/* Environmental Impact */}
-            <div className="px-4 py-2 border-t border-zinc-300 dark:border-zinc-600">
-                <p className="text-xs font-bold uppercase tracking-wider mb-2 text-zinc-500">
+            <div className="px-4 py-2 border-t border-border">
+                <p className="text-xs font-bold uppercase tracking-wider mb-2 text-muted-foreground">
                     Environmental Impact
                 </p>
                 <div className="flex items-center gap-1 mb-2">
@@ -148,7 +148,7 @@ export function NutritionLabel({ jobId }: NutritionLabelProps) {
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-3 bg-zinc-100 dark:bg-zinc-800 border-t border-zinc-300 dark:border-zinc-600">
+            <div className="px-4 py-3 bg-muted/50 border-t border-border">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <Calendar className="h-3 w-3" />

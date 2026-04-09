@@ -27,13 +27,12 @@ export default function UploadPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
-  const [calibrationFile, setCalibrationFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isCalibrationDragging, setIsCalibrationDragging] = useState(false);
   const [config, setConfig] = useState<OptimizationConfig>({
     quantization: "INT8 Dynamic",
     targetDevice: "NVIDIA A100",
     strategy: "Latency Focus",
+    optimizeForHardware: true,
     pruning: "None",
     graphOptimization: "Level 3 (All - Fusion + Fold)",
     knowledgeDistillation: false,
@@ -43,17 +42,32 @@ export default function UploadPage() {
   const uploadMutation = useMutation({
     mutationFn: async () => {
       if (!file) throw new Error("No file selected");
-      const response = await apiRequest("POST", "/api/jobs", {
-        fileName: file.name,
-        fileSize: file.size,
-        config,
+      
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("quantization", config.quantization);
+      formData.append("targetDevice", config.optimizeForHardware ? config.targetDevice : "Platform Agnostic");
+      formData.append("strategy", config.strategy);
+      formData.append("pruning", config.pruning || "None");
+      formData.append("graphOptimization", config.graphOptimization || "Level 3 (All - Fusion + Fold)");
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
       });
-      return await response.json() as Job;
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Upload failed");
+      }
+
+      const result = await response.json();
+      return { id: result.jobId } as Job;
     },
     onSuccess: (job) => {
       toast({
         title: "Optimization started",
-        description: `Job ${job.id.slice(0, 8)} has been queued for processing.`,
+        description: `Job ${job.id.slice(0, 8)} has been queued.`,
       });
       setLocation(`/jobs/${job.id}`);
     },
@@ -89,32 +103,6 @@ export default function UploadPage() {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-    }
-  }, []);
-
-  const handleCalibrationFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.name.endsWith('.jsonl')) {
-      setCalibrationFile(selectedFile);
-    }
-  }, []);
-
-  const handleCalibrationDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsCalibrationDragging(true);
-  }, []);
-
-  const handleCalibrationDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsCalibrationDragging(false);
-  }, []);
-
-  const handleCalibrationDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsCalibrationDragging(false);
-    const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile && droppedFile.name.endsWith('.jsonl')) {
-      setCalibrationFile(droppedFile);
     }
   }, []);
 
@@ -191,64 +179,6 @@ export default function UploadPage() {
           )}
         </div>
 
-        {/* Calibration Dataset Dropzone */}
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-foreground">
-            Calibration Dataset (Optional)
-            <div className="group relative">
-              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-3 bg-popover border border-border rounded-md shadow-lg z-10">
-                <p className="text-xs text-foreground">
-                  Adding a calibration dataset (.jsonl) improves INT8 quantization accuracy by providing representative input samples for activation range estimation.
-                </p>
-              </div>
-            </div>
-          </label>
-          <div
-            className={`flex flex-col items-center justify-center rounded-md border-2 border-dashed py-6 px-4 transition-colors ${isCalibrationDragging
-              ? "border-foreground bg-muted/50"
-              : calibrationFile
-                ? "border-foreground/30 bg-card"
-                : "border-border bg-card"
-              }`}
-            onDragOver={handleCalibrationDragOver}
-            onDragLeave={handleCalibrationDragLeave}
-            onDrop={handleCalibrationDrop}
-          >
-            {calibrationFile ? (
-              <div className="flex flex-col items-center gap-2">
-                <FileUp className="h-5 w-5 text-foreground" />
-                <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">{calibrationFile.name}</p>
-                  <p className="text-xs text-muted-foreground">{formatFileSize(calibrationFile.size)}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCalibrationFile(null)}
-                >
-                  Remove
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-3">
-                <Upload className="h-5 w-5 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Drop .jsonl file here</p>
-                <label>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept=".jsonl"
-                    onChange={handleCalibrationFileSelect}
-                  />
-                  <Button variant="secondary" size="sm" asChild>
-                    <span>Browse</span>
-                  </Button>
-                </label>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       <div className="w-80 border-l border-border bg-card p-6">
@@ -279,22 +209,62 @@ export default function UploadPage() {
             </Select>
           </div>
 
+          <div className="space-y-4 py-2 opacity-90 border-t border-b border-border/50 py-4 my-2">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium leading-none text-foreground cursor-pointer" onClick={() => setConfig({ ...config, optimizeForHardware: !config.optimizeForHardware })}>
+                Target Specific Hardware
+              </label>
+              <Switch
+                checked={config.optimizeForHardware}
+                onCheckedChange={(checked) =>
+                  setConfig({ ...config, optimizeForHardware: checked })
+                }
+              />
+            </div>
+            
+            {config.optimizeForHardware && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Cpu className="h-3.5 w-3.5" />
+                  Target Device
+                </label>
+                <Select
+                  value={config.targetDevice}
+                  onValueChange={(value) =>
+                    setConfig({ ...config, targetDevice: value as typeof config.targetDevice })
+                  }
+                >
+                  <SelectTrigger data-testid="select-target-device">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {targetDeviceOptions.filter(opt => opt !== "Platform Agnostic").map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Cpu className="h-3.5 w-3.5" />
-              Target Device
+              <Scissors className="h-3.5 w-3.5" />
+              Pruning Strategy
             </label>
             <Select
-              value={config.targetDevice}
+              value={config.pruning}
               onValueChange={(value) =>
-                setConfig({ ...config, targetDevice: value as typeof config.targetDevice })
+                setConfig({ ...config, pruning: value as typeof config.pruning })
               }
             >
-              <SelectTrigger data-testid="select-target-device">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {targetDeviceOptions.map((opt) => (
+                {pruningOptions.map((opt) => (
                   <SelectItem key={opt} value={opt}>
                     {opt}
                   </SelectItem>
@@ -302,6 +272,31 @@ export default function UploadPage() {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Network className="h-3.5 w-3.5" />
+              Graph Optimization
+            </label>
+            <Select
+              value={config.graphOptimization}
+              onValueChange={(value) =>
+                setConfig({ ...config, graphOptimization: value as typeof config.graphOptimization })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {graphOptimizationOptions.map((opt) => (
+                  <SelectItem key={opt} value={opt}>
+                    {opt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
 
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -325,88 +320,6 @@ export default function UploadPage() {
                 ))}
               </SelectContent>
             </Select>
-          </div>
-
-          <div>
-            <div className="flex items-center gap-2 text-sm font-medium py-4 text-foreground border-t border-border mt-4">
-              <Settings2 className="h-4 w-4" />
-              Advanced Settings
-            </div>
-            <div className="space-y-5 pt-2">
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Scissors className="h-3.5 w-3.5" />
-                  Model Pruning / Sparsity
-                </label>
-                <Select
-                  value={config.pruning || "None"}
-                  onValueChange={(value) =>
-                    setConfig({ ...config, pruning: value as any })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select pruning method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {pruningOptions.map((opt) => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Activity className="h-3.5 w-3.5" />
-                  Graph Optimization
-                </label>
-                <Select
-                  value={config.graphOptimization || "Level 3 (All - Fusion + Fold)"}
-                  onValueChange={(value) =>
-                    setConfig({ ...config, graphOptimization: value as any })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {graphOptimizationOptions.map((opt) => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center justify-between py-1">
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Network className="h-3.5 w-3.5" />
-                  Knowledge Distillation
-                </label>
-                <Switch
-                  checked={config.knowledgeDistillation}
-                  onCheckedChange={(checked) =>
-                    setConfig({ ...config, knowledgeDistillation: checked })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center justify-between py-1">
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Wand2 className="h-3.5 w-3.5" />
-                  Kernel Auto-Tuning
-                </label>
-                <Switch
-                  checked={config.kernelAutoTuning}
-                  onCheckedChange={(checked) =>
-                    setConfig({ ...config, kernelAutoTuning: checked })
-                  }
-                />
-              </div>
-            </div>
           </div>
         </div>
 

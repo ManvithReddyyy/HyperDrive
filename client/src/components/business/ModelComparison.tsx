@@ -206,28 +206,20 @@ export function ModelComparison() {
             {comparison && (
                 <>
                     {/* Winner Banner */}
-                    <Card className={`p-6 text-center ${comparison.comparison.winner === "tie"
-                        ? "bg-zinc-100 dark:bg-zinc-800"
-                        : "bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-950/40 dark:to-emerald-950/40 border-green-300"
-                        }`}>
+                    <Card className="p-6 text-center bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-950/40 dark:to-emerald-950/40 border-green-300">
                         <div className="flex items-center justify-center gap-3">
-                            {comparison.comparison.winner === "tie" ? (
-                                <>
-                                    <Minus className="h-6 w-6 text-zinc-500" />
-                                    <span className="font-semibold text-lg">It's a Tie!</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Trophy className="h-6 w-6 text-green-600" />
-                                    <span className="font-semibold text-lg text-green-700 dark:text-green-400">
-                                        Winner: {comparison.comparison.winner === "job1" ? comparison.job1.fileName : comparison.job2.fileName}
-                                    </span>
-                                </>
-                            )}
+                            <Trophy className="h-6 w-6 text-green-600" />
+                            <span className="font-semibold text-lg text-green-700 dark:text-green-400">
+                                Winner: {comparison.comparison.winner === "job2" ? comparison.job2.fileName : comparison.job1.fileName}
+                            </span>
                         </div>
-                        {comparison.comparison.winner !== "tie" && (
+                        {comparison.comparison.sizeImprovement !== 0 ? (
                             <p className="text-sm text-muted-foreground mt-2">
-                                {Math.abs(comparison.comparison.sizeImprovement)}% better size reduction
+                                {Math.abs(comparison.comparison.sizeImprovement || 0)}% better size reduction
+                            </p>
+                        ) : (
+                            <p className="text-sm text-muted-foreground mt-2">
+                                Models perform identically • Defaulted to baseline
                             </p>
                         )}
                     </Card>

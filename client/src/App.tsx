@@ -1,4 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +12,7 @@ import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
 import NotFound from "@/pages/not-found";
+import HeroPage from "@/pages/hero";
 import HomePage from "@/pages/home";
 import UploadPage from "@/pages/upload";
 import JobsPage from "@/pages/jobs";
@@ -24,12 +26,11 @@ import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
 import RegistryPage from "@/pages/registry";
 import ComparePage from "@/pages/compare";
-import InsightsPage from "@/pages/insights";
 import TeamsPage from "@/pages/teams";
 import { Loader2 } from "lucide-react";
 
 function getBreadcrumbs(path: string): { label: string }[] {
-  if (path === "/" || path === "") return [];
+  if (path === "/dashboard" || path === "") return [];
   if (path === "/upload") return [{ label: "New Optimization" }];
   if (path === "/jobs") return [{ label: "Jobs" }];
   if (path.startsWith("/jobs/")) {
@@ -39,29 +40,40 @@ function getBreadcrumbs(path: string): { label: string }[] {
   if (path === "/playground") return [{ label: "Playground" }];
   if (path === "/deploy") return [{ label: "Deployment" }];
   if (path === "/compare") return [{ label: "Compare" }];
-  if (path === "/insights") return [{ label: "Insights" }];
   if (path === "/teams") return [{ label: "Teams" }];
   if (path === "/settings") return [{ label: "Settings" }];
   return [];
 }
 
 function ProtectedRouter() {
+  const [location] = useLocation();
+  
   return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/upload" component={UploadPage} />
-      <Route path="/jobs" component={JobsPage} />
-      <Route path="/jobs/:id" component={JobDetailPage} />
-      <Route path="/registry" component={RegistryPage} />
-      <Route path="/playground" component={PlaygroundPage} />
-      <Route path="/settings" component={SettingsPage} />
-      <Route path="/analysis" component={AnalysisPage} />
-      <Route path="/deploy" component={DeployPage} />
-      <Route path="/compare" component={ComparePage} />
-      <Route path="/insights" component={InsightsPage} />
-      <Route path="/teams" component={TeamsPage} />
-      <Route component={NotFound} />
-    </Switch>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location}
+        initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="h-full w-full"
+      >
+        <Switch>
+          <Route path="/dashboard" component={HomePage} />
+          <Route path="/upload" component={UploadPage} />
+          <Route path="/jobs" component={JobsPage} />
+          <Route path="/jobs/:id" component={JobDetailPage} />
+          <Route path="/registry" component={RegistryPage} />
+          <Route path="/playground" component={PlaygroundPage} />
+          <Route path="/settings" component={SettingsPage} />
+          <Route path="/analysis" component={AnalysisPage} />
+          <Route path="/deploy" component={DeployPage} />
+          <Route path="/compare" component={ComparePage} />
+          <Route path="/teams" component={TeamsPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
@@ -104,15 +116,6 @@ function AppContent() {
   const { user, isLoading } = useAuth();
   const [location, setLocation] = useLocation();
 
-  // AUTH DISABLED - Remove this block when re-enabling authentication
-  // Skip all auth checks and show main layout directly
-  return (
-    <SidebarProvider style={{ "--sidebar-width": "15rem", "--sidebar-width-icon": "3rem" } as React.CSSProperties}>
-      <MainLayout />
-    </SidebarProvider>
-  );
-
-  /* ORIGINAL AUTH CODE - Uncomment when re-enabling authentication
   // Show loading spinner while checking auth
   if (isLoading) {
     return (
@@ -124,9 +127,9 @@ function AppContent() {
 
   // Auth pages - no sidebar
   if (location === "/login" || location === "/signup") {
-    // If user is already logged in, redirect to home
+    // If user is already logged in, redirect to dashboard
     if (user) {
-      setLocation("/");
+      setLocation("/dashboard");
       return null;
     }
     return (
@@ -135,6 +138,11 @@ function AppContent() {
         <Route path="/signup" component={SignupPage} />
       </Switch>
     );
+  }
+
+  // Public Landing Page
+  if (location === "/") {
+    return <HeroPage />;
   }
 
   // Not logged in - redirect to login
@@ -148,7 +156,6 @@ function AppContent() {
       <MainLayout />
     </SidebarProvider>
   );
-  */
 }
 
 function App() {

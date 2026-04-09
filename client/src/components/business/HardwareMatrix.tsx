@@ -24,12 +24,12 @@ const CustomScatterTooltip = ({ active, payload }: any) => {
       throughput_tokens_s > 300 && cost_per_hour < 2.0;
 
     return (
-      <div className="rounded bg-white border border-zinc-200 p-3 text-zinc-900 text-sm shadow-sm">
+      <div className="rounded bg-card border border-border p-3 text-card-foreground text-sm shadow-sm">
         <p className="font-medium">{name}</p>
-        <p className="text-xs text-zinc-600">
+        <p className="text-xs text-muted-foreground">
           Cost: ${cost_per_hour.toFixed(2)}/hr
         </p>
-        <p className="text-xs text-zinc-600">
+        <p className="text-xs text-muted-foreground">
           Speed: {throughput_tokens_s} tokens/s
         </p>
         {recommended && (
@@ -62,7 +62,7 @@ export function HardwareMatrix() {
   }, []);
 
   if (loading) {
-    return <div className="text-zinc-600">Loading hardware options...</div>;
+    return <div className="text-muted-foreground">Loading hardware options...</div>;
   }
 
   const getColor = (item: HardwareOption) => {
@@ -80,7 +80,7 @@ export function HardwareMatrix() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <h3 className="text-sm font-semibold text-zinc-900 mb-2">
+      <h3 className="text-sm font-semibold text-foreground mb-2">
         Deployment Hardware Options
       </h3>
       <div className="flex-1 min-h-0">
@@ -109,7 +109,7 @@ export function HardwareMatrix() {
           </ScatterChart>
         </ResponsiveContainer>
       </div>
-      <div className="text-xs text-zinc-600 mt-2 flex gap-4">
+      <div className="text-xs text-muted-foreground mt-2 flex gap-4">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-green-500"></div>
           <span>Recommended</span>

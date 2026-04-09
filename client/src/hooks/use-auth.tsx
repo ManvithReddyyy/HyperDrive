@@ -37,13 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = useQuery<User | null, Error>({
         queryKey: ["auth", "user"],
         queryFn: async () => {
-            // Instantly return a mock user for the presentation
-            return {
-                id: "1",
-                username: "demo_user",
-                email: "demo@hyperdrive.ai",
-                password: "",
-            };
+            const storedUser = localStorage.getItem("auth_user");
+            if (storedUser) {
+                return JSON.parse(storedUser);
+            }
+            return null;
         },
         staleTime: 5 * 60 * 1000,
         retry: false,
@@ -63,21 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const loginMutation = useMutation({
         mutationFn: async (credentials: LoginData) => {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: credentials.username,
-                password: credentials.password,
-            });
-
-            if (error) throw error;
-            if (!data.user) throw new Error("Login failed");
-
+            // Mock offline login
             return {
-                id: data.user.id,
-                username: data.user.email || credentials.username,
+                id: "local_user_1",
+                username: credentials.username,
                 password: "",
-            };
+            } as User;
         },
         onSuccess: (user: User) => {
+            localStorage.setItem("auth_user", JSON.stringify(user));
             queryClient.setQueryData(["auth", "user"], user);
             toast({
                 title: "Welcome back!",
@@ -95,26 +87,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const registerMutation = useMutation({
         mutationFn: async (credentials: InsertUser) => {
-            const { data, error } = await supabase.auth.signUp({
-                email: credentials.username,
-                password: credentials.password,
-                options: {
-                    data: {
-                        username: credentials.username,
-                    },
-                },
-            });
-
-            if (error) throw error;
-            if (!data.user) throw new Error("Registration failed");
-
+            // Mock offline registration
             return {
-                id: data.user.id,
-                username: data.user.email || credentials.username,
+                id: "local_user_1",
+                username: credentials.username,
                 password: "",
-            };
+            } as User;
         },
         onSuccess: (user: User) => {
+            localStorage.setItem("auth_user", JSON.stringify(user));
             queryClient.setQueryData(["auth", "user"], user);
             toast({
                 title: "Account created!",
@@ -132,8 +113,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logoutMutation = useMutation({
         mutationFn: async () => {
-            const { error } = await supabase.auth.signOut();
-            if (error) throw error;
+            // Mock offline logout
+            localStorage.removeItem("auth_user");
         },
         onSuccess: () => {
             queryClient.setQueryData(["auth", "user"], null);

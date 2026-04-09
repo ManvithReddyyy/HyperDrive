@@ -156,7 +156,7 @@ export default function RegistryPage() {
                                 {completedJobs.map((job) => (
                                     <TableRow
                                         key={job.id}
-                                        className="cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                                        className="cursor-pointer hover:bg-muted/50"
                                         onClick={() => setSelectedJobId(job.id)}
                                     >
                                         <TableCell>

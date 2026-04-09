@@ -84,13 +84,13 @@ export default function AnalysisPage() {
               <div className="h-full grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
                   <h3 className="text-xs font-medium text-muted-foreground mb-2 uppercase">Before Optimization</h3>
-                  <div className="flex-1 bg-zinc-50 rounded border border-border p-4 overflow-auto">
+                  <div className="flex-1 bg-muted/30 rounded border border-border p-4 overflow-auto">
                     <SensitivityChart jobId={jobToAnalyze} />
                   </div>
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-xs font-medium text-muted-foreground mb-2 uppercase">After Optimization</h3>
-                  <div className="flex-1 bg-zinc-50 rounded border border-border p-4 overflow-auto">
+                  <div className="flex-1 bg-muted/30 rounded border border-border p-4 overflow-auto">
                     <OptimizedSensitivityChart jobId={jobToAnalyze} />
                   </div>
                 </div>
@@ -101,13 +101,13 @@ export default function AnalysisPage() {
               <div className="h-full grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
                   <h3 className="text-xs font-medium text-muted-foreground mb-2 uppercase">Original Architecture</h3>
-                  <div className="flex-1 bg-zinc-50 rounded border border-border overflow-hidden">
+                  <div className="flex-1 bg-muted/30 rounded border border-border overflow-hidden">
                     <ArchitectureGraph jobId={jobToAnalyze} />
                   </div>
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-xs font-medium text-muted-foreground mb-2 uppercase">Optimized Architecture</h3>
-                  <div className="flex-1 bg-zinc-50 rounded border border-border overflow-hidden">
+                  <div className="flex-1 bg-muted/30 rounded border border-border overflow-hidden">
                     <ArchitectureGraph jobId={jobToAnalyze} />
                   </div>
                 </div>

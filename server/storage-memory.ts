@@ -122,7 +122,7 @@ export class MemoryStorage implements IStorage {
     async createJob(data: CreateJob, userId: string): Promise<Job> {
         const id = randomUUID();
         const now = new Date().toISOString();
-        const job: Job = {
+        const job: Job & { filePath?: string } = {
             id,
             fileName: data.fileName,
             fileSize: data.fileSize || 0,
@@ -136,6 +136,7 @@ export class MemoryStorage implements IStorage {
             sizeReduction: undefined,
             createdAt: now,
             completedAt: undefined,
+            filePath: (data as any).filePath,
         };
         this.jobs.set(id, job);
         this.scheduleSave();
@@ -189,16 +190,16 @@ export class MemoryStorage implements IStorage {
         else if (quant.includes("BF16")) { dtype = "np.float32"; dtypeComment = "# BF16 cast handled by runtime"; }
         else if (quant.includes("INT8")) { dtype = "np.float32"; dtypeComment = "# INT8 quantized, input still float32"; }
 
-        const python = `#!/usr/bin/env python3
+        const python = `##!/usr/bin/env python3
 """
 HyperDrive — Auto-Generated Production Inference Server
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-----------------------------------------------------
 Model     : ${job.fileName}
 Optimized : ${modelFile}
 Strategy  : ${quant} on ${device}
-Latency   : ${origLatency}ms → ${optLatency}ms  (${sizeRed}% size reduction)
+Latency   : ${origLatency}ms -> ${optLatency}ms  (${sizeRed}% size reduction)
 Generated : ${new Date().toISOString()}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-----------------------------------------------------
 """
 
 import time
@@ -335,12 +336,12 @@ if __name__ == "__main__":
         let gpuKind = "KIND_GPU";
         if (device.includes("CPU") || device.includes("Intel Xeon") || device.includes("Intel Core")) gpuKind = "KIND_CPU";
 
-        const triton = `# ═══════════════════════════════════════════════════════════
+        const triton = `# =========================================================
 # Triton Inference Server  ·  HyperDrive Auto-Config
 # Model   : ${modelBase}  (${quant})
 # Device  : ${device}
-# Latency : ${origLatency}ms → ${optLatency}ms
-# ═══════════════════════════════════════════════════════════
+# Latency : ${origLatency}ms -> ${optLatency}ms
+# =========================================================
 
 name: "${modelBase}"
 platform: "onnxruntime_onnx"
@@ -391,12 +392,12 @@ model_warmup [
 ]
 `;
 
-        const docker = `# ════════════════════════════════════════════════════════
+        const docker = `# ========================================================
 # HyperDrive  ·  Production Dockerfile (Multi-Stage)
-# Model   : ${job.fileName} → ${modelFile}
+# Model   : ${job.fileName} -> ${modelFile}
 # Config  : ${quant} | ${device}
-# Perf    : ${origLatency}ms → ${optLatency}ms  ·  ${sizeRed}% smaller
-# ════════════════════════════════════════════════════════
+# Perf    : ${origLatency}ms -> ${optLatency}ms  ·  ${sizeRed}% smaller
+# ========================================================
 
 # ── Stage 1: Dependency Builder ──────────────────────────
 FROM python:3.11-slim AS builder
