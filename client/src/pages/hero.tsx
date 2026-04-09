@@ -31,24 +31,21 @@ function Navbar() {
       </div>
       
       <div className="hidden md:flex items-center justify-center liquid-glass rounded-full px-1.5 py-1">
-        <a href="#home" className="px-3 py-2 text-sm font-medium text-foreground/90 font-body hover:text-white transition-colors">Home</a>
-        <a href="#services" className="px-3 py-2 text-sm font-medium text-foreground/90 font-body hover:text-white transition-colors">Capabilities</a>
-        <a href="#process" className="px-3 py-2 text-sm font-medium text-foreground/90 font-body hover:text-white transition-colors">Process</a>
         <Link href="/login" className="px-3 py-2 text-sm font-medium text-foreground/90 font-body hover:text-white transition-colors">Log In</Link>
-        <Link href="/signup">
+        <a href="https://github.com/ManvithReddyyy/HyperDrive" target="_blank" rel="noopener noreferrer">
           <button className="ml-2 bg-white text-black rounded-full px-3.5 py-1.5 text-sm font-body font-medium flex items-center gap-1 hover:bg-gray-200 transition-colors">
-            Get Started <ArrowUpRight className="h-4 w-4" />
+            GitHub Page <ArrowUpRight className="h-4 w-4" />
           </button>
-        </Link>
+        </a>
       </div>
       
       <div className="md:hidden flex items-center gap-4">
         <Link href="/login" className="text-sm font-medium text-foreground/90 font-body hover:text-white transition-colors">Log In</Link>
-        <Link href="/signup">
+        <a href="https://github.com/ManvithReddyyy/HyperDrive" target="_blank" rel="noopener noreferrer">
           <button className="bg-white text-black rounded-full px-3 py-1 text-sm font-body font-medium flex items-center gap-1 hover:bg-gray-200 transition-colors">
-            Start <ArrowUpRight className="h-3 w-3" />
+            GitHub <ArrowUpRight className="h-3 w-3" />
           </button>
-        </Link>
+        </a>
       </div>
     </nav>
   );
@@ -93,14 +90,11 @@ function Hero() {
           animate={{ filter: 'blur(0px)', opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.6 }}
         >
-          <Link href="/signup">
+          <a href="https://github.com/ManvithReddyyy/HyperDrive" target="_blank" rel="noopener noreferrer">
             <button className="liquid-glass-strong rounded-full px-5 py-2.5 text-white font-body font-medium flex items-center gap-2 hover:bg-white/10 transition-colors">
-              Get Started <ArrowUpRight className="h-4 w-4" />
+              GitHub Page <ArrowUpRight className="h-4 w-4" />
             </button>
-          </Link>
-          <button className="text-white font-body font-medium px-4 py-2 flex items-center gap-2 hover:text-white/80 transition-colors">
-            <Play className="h-4 w-4 fill-white" /> Watch the Film
-          </button>
+          </a>
         </motion.div>
         
         <div className="mt-auto pb-8 pt-16 flex flex-col items-center w-full max-w-5xl px-6">

@@ -26,7 +26,6 @@ import LoginPage from "@/pages/login";
 import SignupPage from "@/pages/signup";
 import RegistryPage from "@/pages/registry";
 import ComparePage from "@/pages/compare";
-import TeamsPage from "@/pages/teams";
 import { Loader2 } from "lucide-react";
 
 function getBreadcrumbs(path: string): { label: string }[] {
@@ -40,7 +39,7 @@ function getBreadcrumbs(path: string): { label: string }[] {
   if (path === "/playground") return [{ label: "Playground" }];
   if (path === "/deploy") return [{ label: "Deployment" }];
   if (path === "/compare") return [{ label: "Compare" }];
-  if (path === "/teams") return [{ label: "Teams" }];
+  if (path === "/compare") return [{ label: "Compare" }];
   if (path === "/settings") return [{ label: "Settings" }];
   return [];
 }
@@ -69,7 +68,6 @@ function ProtectedRouter() {
           <Route path="/analysis" component={AnalysisPage} />
           <Route path="/deploy" component={DeployPage} />
           <Route path="/compare" component={ComparePage} />
-          <Route path="/teams" component={TeamsPage} />
           <Route component={NotFound} />
         </Switch>
       </motion.div>

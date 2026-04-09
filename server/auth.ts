@@ -1,8 +1,23 @@
 import { Express, Request, Response } from "express";
-import { supabase } from "./supabase";
+import { randomUUID, createHash, timingSafeEqual } from "crypto";
+import { storage } from "./storage";
 import { insertUserSchema } from "@shared/schema";
 
-// Middleware to verify Supabase session
+// Simple token store is now persistent via storage.json
+
+function hashPassword(password: string): string {
+    return createHash("sha256").update(password + "hyperdrive_salt_2024").digest("hex");
+}
+
+function generateToken(): string {
+    return randomUUID() + "-" + randomUUID();
+}
+
+export async function getUserIdFromToken(token: string): Promise<string | undefined> {
+    return storage.getSession(token);
+}
+
+// Middleware to verify local session
 export async function requireAuth(req: Request, res: Response, next: Function) {
     const authHeader = req.headers.authorization;
 
@@ -11,76 +26,106 @@ export async function requireAuth(req: Request, res: Response, next: Function) {
     }
 
     const token = authHeader.substring(7);
+    const userId = await storage.getSession(token);
 
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-
-    if (error || !user) {
-        return res.status(401).json({ error: "Invalid token" });
+    if (!userId) {
+        return res.status(401).json({ error: "Invalid or expired session" });
     }
 
-    // Attach user to request
-    (req as any).user = { id: user.id, email: user.email };
+    const user = await storage.getUser(userId);
+    if (!user) {
+        await storage.deleteSession(token);
+        return res.status(401).json({ error: "User not found" });
+    }
+
+    (req as any).user = { id: user.id, username: user.username };
     next();
 }
 
 export function setupAuth(app: Express) {
-    // Register endpoint (creates auth user)
+    // Register endpoint
     app.post("/api/register", async (req, res) => {
         try {
             const body = insertUserSchema.parse(req.body);
 
-            // Create auth user in Supabase
-            const { data, error } = await supabase.auth.signUp({
-                email: body.username, // Using username as email for compatibility
-                password: body.password,
-                options: {
-                    data: {
-                        username: body.username,
-                    },
-                },
+            // Check if user already exists
+            const existing = await storage.getUserByUsername(body.username);
+            if (existing) {
+                return res.status(400).json({ error: "An account with this email already exists" });
+            }
+
+            const id = randomUUID();
+            const hashedPassword = hashPassword(body.password);
+            const normalizedUsername = body.username.trim().toLowerCase();
+
+            const user = await storage.createUser({
+                id,
+                username: normalizedUsername,
+                password: hashedPassword,
+                fullName: body.fullName,
+                organization: body.organization,
+                role: body.role,
             });
 
-            if (error) {
-                return res.status(400).json({ error: error.message });
-            }
+            // Auto-login after registration
+            const token = generateToken();
+            await storage.createSession(token, user.id);
 
-            if (!data.user) {
-                return res.status(400).json({ error: "Failed to create user" });
-            }
-
-            // Return user data (profile is created automatically via trigger)
             res.json({
-                id: data.user.id,
-                username: body.username,
-                password: "", // Never return password
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    password: "",
+                    fullName: (user as any).fullName,
+                    organization: (user as any).organization,
+                    role: (user as any).role,
+                },
+                session: { access_token: token },
             });
         } catch (error: any) {
+            if (error.name === "ZodError") {
+                return res.status(400).json({ error: error.errors[0]?.message || "Invalid input" });
+            }
             res.status(400).json({ error: error.message });
         }
     });
 
-    // Login endpoint (creates session)
+    // Login endpoint
     app.post("/api/login", async (req, res) => {
         try {
             const { username, password } = req.body;
 
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: username,
-                password: password,
-            });
-
-            if (error) {
-                return res.status(401).json({ error: "Invalid credentials" });
+            if (!username || !password) {
+                return res.status(400).json({ error: "Email and password are required" });
             }
 
-            // Return session and user
+            const normalizedUsername = username.trim().toLowerCase();
+            const user = await storage.getUserByUsername(normalizedUsername);
+
+            if (!user) {
+                return res.status(401).json({ error: "Invalid email or password" });
+            }
+
+            const hashedInput = hashPassword(password);
+            const valid = user.password === hashedInput;
+
+            if (!valid) {
+                return res.status(401).json({ error: "Invalid email or password" });
+            }
+
+            const token = generateToken();
+            await storage.createSession(token, user.id);
+
             res.json({
                 user: {
-                    id: data.user.id,
-                    username: username,
+                    id: user.id,
+                    username: user.username,
                     password: "",
+                    fullName: (user as any).fullName,
+                    organization: (user as any).organization,
+                    role: (user as any).role,
                 },
-                session: data.session,
+                session: { access_token: token },
             });
         } catch (error: any) {
             res.status(400).json({ error: error.message });
@@ -90,12 +135,10 @@ export function setupAuth(app: Express) {
     // Logout endpoint
     app.post("/api/logout", async (req, res) => {
         const authHeader = req.headers.authorization;
-
         if (authHeader && authHeader.startsWith("Bearer ")) {
             const token = authHeader.substring(7);
-            await supabase.auth.signOut();
+            await storage.deleteSession(token);
         }
-
         res.json({ message: "Logged out successfully" });
     });
 
@@ -108,17 +151,25 @@ export function setupAuth(app: Express) {
         }
 
         const token = authHeader.substring(7);
+        const userId = await storage.getSession(token);
 
-        const { data: { user }, error } = await supabase.auth.getUser(token);
-
-        if (error || !user) {
+        if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const user = await storage.getUser(userId);
+        if (!user) {
+            await storage.deleteSession(token);
+            return res.status(401).json({ error: "User not found" });
         }
 
         res.json({
             id: user.id,
-            username: user.email,
+            username: user.username,
             password: "",
+            fullName: (user as any).fullName,
+            organization: (user as any).organization,
+            role: (user as any).role,
         });
     });
 }

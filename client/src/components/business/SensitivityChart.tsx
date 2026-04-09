@@ -9,6 +9,8 @@ import {
   Cell,
 } from "recharts";
 
+import { apiRequest } from "@/lib/queryClient";
+
 interface SensitivityLayer {
   layer: string;
   error: number;
@@ -21,7 +23,7 @@ export function SensitivityChart({ jobId }: { jobId: string }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`/api/jobs/${jobId}/sensitivity`);
+        const res = await apiRequest("GET", `/api/jobs/${jobId}/sensitivity`);
         const layers = await res.json();
         setData(layers);
       } catch (err) {

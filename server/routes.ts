@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { createJobSchema, inferenceRequestSchema } from "@shared/schema";
 import { z } from "zod";
 import { supabase } from "./supabase"; // kept for potential future use but auth calls bypassed
+import { getUserIdFromToken } from "./auth";
 import { addJobConnection, removeJobConnection } from "./broadcast";
 import multer from "multer";
 import path from "path";
@@ -15,11 +16,22 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup multer for file uploads
   const uploadsDir = path.join(process.cwd(), "uploads");
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
+
+  // Helper to extract user ID from the request
+  const getUserId = async (req: any): Promise<string> => {
+    if (req.user?.id) return req.user.id;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const id = await getUserIdFromToken(authHeader.substring(7));
+      if (id) return id;
+    }
+    // Fallback: Use fake user so app doesn't break for offline/unauthenticated demo mode
+    return "00000000-0000-0000-0000-000000000000";
+  };
 
   const storage_multer = multer({
     dest: uploadsDir,
@@ -59,8 +71,7 @@ export async function registerRoutes(
     try {
       const data = createJobSchema.parse(req.body);
 
-      // AUTH DISABLED - use default user
-      const userId = "00000000-0000-0000-0000-000000000000";
+      const userId = await getUserId(req);
 
       console.log("Creating job with userId:", userId);
       const job = await storage.createJob(data, userId);
@@ -94,13 +105,18 @@ export async function registerRoutes(
   // Update user profile
   app.patch("/api/user/profile", async (req, res) => {
     try {
-      // AUTH DISABLED - use default user
-      const userId = "00000000-0000-0000-0000-000000000000";
+      const userId = await getUserId(req);
       const { displayName } = req.body;
 
       if (!displayName || typeof displayName !== "string") {
         res.status(400).json({ error: "Display name is required" });
         return;
+      }
+
+      // Update in storage if possible, otherwise just return success for demo
+      const user = await storage.getUser(userId);
+      if (user) {
+        await storage.updateUser(userId, { fullName: displayName });
       }
 
       res.json({ success: true, displayName: displayName.trim() });
@@ -112,7 +128,7 @@ export async function registerRoutes(
 
   app.get("/api/jobs", async (req, res) => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = await getUserId(req);
       const jobs = await storage.getAllJobs(userId);
       res.json(jobs);
     } catch (error) {
@@ -129,16 +145,7 @@ export async function registerRoutes(
         return;
       }
 
-      const authHeader = req.headers.authorization;
-      let userId = "00000000-0000-0000-0000-000000000000";
-
-      if (authHeader && authHeader.startsWith("Bearer ")) {
-        const token = authHeader.substring(7);
-        const { data: { user }, error } = await supabase.auth.getUser(token);
-        if (user && !error) {
-          userId = user.id;
-        }
-      }
+      const userId = await getUserId(req);
 
       // Get file stats
       const fileStats = fs.statSync(req.file.path);
@@ -182,8 +189,9 @@ export async function registerRoutes(
 
   app.get("/api/jobs/:id", async (req, res) => {
     try {
+      const userId = await getUserId(req);
       const job = await storage.getJob(req.params.id);
-      if (!job) {
+      if (!job || (job.userId !== userId && userId !== "00000000-0000-0000-0000-000000000000")) {
         res.status(404).json({ error: "Job not found" });
         return;
       }
@@ -343,7 +351,14 @@ export async function registerRoutes(
   // Sensitivity Analysis endpoint
   app.get("/api/jobs/:id/sensitivity", async (req, res) => {
     try {
+      const userId = await getUserId(req);
       const jobId = req.params.id;
+      const job = await storage.getJob(jobId);
+      if (!job || (job.userId !== userId && userId !== "00000000-0000-0000-0000-000000000000")) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+      }
+
       await ensureModelInPythonBackend(jobId);
       const apiRes = await fetch(`http://127.0.0.1:8000/api/jobs/${jobId}/sensitivity`);
       if (apiRes.status === 404) {
@@ -364,7 +379,14 @@ export async function registerRoutes(
   // Architecture Graph endpoint
   app.get("/api/jobs/:id/graph", async (req, res) => {
     try {
+      const userId = await getUserId(req);
       const jobId = req.params.id;
+      const job = await storage.getJob(jobId);
+      if (!job || (job.userId !== userId && userId !== "00000000-0000-0000-0000-000000000000")) {
+        res.status(404).json({ error: "Job not found" });
+        return;
+      }
+
       await ensureModelInPythonBackend(jobId);
       const apiRes = await fetch(`http://127.0.0.1:8000/api/jobs/${jobId}/graph`);
       if (apiRes.status === 404) {
@@ -511,10 +533,11 @@ export async function registerRoutes(
   // Model Nutrition Label - AI Bill of Materials
   app.get("/api/models/:id/nutrition", async (req, res) => {
     try {
+      const userId = await getUserId(req);
       const jobId = req.params.id;
       const job = await storage.getJob(jobId);
 
-      if (!job) {
+      if (!job || (job.userId !== userId && userId !== "00000000-0000-0000-0000-000000000000")) {
         res.status(404).json({ error: "Model not found" });
         return;
       }
@@ -939,16 +962,11 @@ export async function registerRoutes(
   // Job Templates CRUD
   app.post("/api/templates", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      const userId = await getUserId(req);
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-      const template = await storage.createTemplate(req.body, user.id);
-      await storage.logAudit(user.id, user.email || "user", "template.create", "template", template.id);
+      const template = await storage.createTemplate(req.body, userId);
+      await storage.logAudit(userId, "user", "template.create", "template", template.id);
       res.json(template);
     } catch (error) {
       console.error("Error creating template:", error);
@@ -958,13 +976,7 @@ export async function registerRoutes(
 
   app.get("/api/templates", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      let userId = "00000000-0000-0000-0000-000000000000";
-      if (authHeader?.startsWith("Bearer ")) {
-        const token = authHeader.substring(7);
-        const { data: { user } } = await supabase.auth.getUser(token);
-        if (user) userId = user.id;
-      }
+      const userId = await getUserId(req);
       const templates = await storage.getTemplates(userId);
       res.json(templates);
     } catch (error) {
@@ -975,17 +987,12 @@ export async function registerRoutes(
 
   app.delete("/api/templates/:id", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      const userId = await getUserId(req);
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-      const success = await storage.deleteTemplate(req.params.id, user.id);
+      const success = await storage.deleteTemplate(req.params.id, userId);
       if (success) {
-        await storage.logAudit(user.id, user.email || "user", "template.delete", "template", req.params.id);
+        await storage.logAudit(userId, "user", "template.delete", "template", req.params.id);
       }
       res.json({ success });
     } catch (error) {
@@ -997,15 +1004,10 @@ export async function registerRoutes(
   // Webhooks CRUD
   app.post("/api/webhooks", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      const userId = await getUserId(req);
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-      const webhook = await storage.createWebhook(req.body, user.id);
+      const webhook = await storage.createWebhook(req.body, userId);
       res.json(webhook);
     } catch (error) {
       console.error("Error creating webhook:", error);
@@ -1015,15 +1017,10 @@ export async function registerRoutes(
 
   app.get("/api/webhooks", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      const userId = await getUserId(req);
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-      const webhooks = await storage.getWebhooks(user.id);
+      const webhooks = await storage.getWebhooks(userId);
       res.json(webhooks);
     } catch (error) {
       console.error("Error fetching webhooks:", error);
@@ -1033,15 +1030,10 @@ export async function registerRoutes(
 
   app.delete("/api/webhooks/:id", async (req, res) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith("Bearer ")) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
-      const token = authHeader.substring(7);
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (!user) return res.status(401).json({ error: "Invalid token" });
+      const userId = await getUserId(req);
+      if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-      const success = await storage.deleteWebhook(req.params.id, user.id);
+      const success = await storage.deleteWebhook(req.params.id, userId);
       res.json({ success });
     } catch (error) {
       console.error("Error deleting webhook:", error);
@@ -1111,12 +1103,10 @@ export async function registerRoutes(
   // Teams CRUD
   app.post("/api/teams", async (req, res) => {
     try {
-      // DEMO MODE: bypass Supabase auth
-      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
-
+      const userId = await getUserId(req);
       const { name, description } = req.body;
-      const team = await storage.createTeam(name, description, user.id);
-      await storage.logAudit(user.id, user.email, "team.create", "team", team.id);
+      const team = await storage.createTeam(name, description, userId);
+      await storage.logAudit(userId, "user", "team.create", "team", team.id);
       res.json(team);
     } catch (error) {
       console.error("Error creating team:", error);
@@ -1149,13 +1139,11 @@ export async function registerRoutes(
 
   app.post("/api/teams/:id/invite", async (req, res) => {
     try {
-      // DEMO MODE: bypass Supabase auth
-      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
-
+      const userId = await getUserId(req);
       const { email, role } = req.body;
       const success = await storage.inviteToTeam(req.params.id, email, role || "viewer");
       if (success) {
-        await storage.logAudit(user.id, user.email, "team.invite", "team", req.params.id, { invitedEmail: email });
+        await storage.logAudit(userId, "user", "team.invite", "team", req.params.id, { invitedEmail: email });
       }
       res.json({ success });
     } catch (error) {
@@ -1192,11 +1180,9 @@ export async function registerRoutes(
   // Audit Log
   app.get("/api/audit-log", async (req, res) => {
     try {
-      // DEMO MODE: bypass Supabase auth
-      const user = { id: "00000000-0000-0000-0000-000000000000", email: "demo@hyperdrive.ai" };
-
+      const userId = await getUserId(req);
       const limit = parseInt(req.query.limit as string) || 50;
-      const logs = await storage.getAuditLogs(user.id, limit);
+      const logs = await storage.getAuditLogs(userId, limit);
       res.json(logs);
     } catch (error) {
       console.error("Error fetching audit log:", error);
@@ -1279,9 +1265,7 @@ export async function registerRoutes(
 
   app.get("/api/batches", async (req, res) => {
     try {
-      // AUTH DISABLED - use default user
-      const userId = "00000000-0000-0000-0000-000000000000";
-
+      const userId = await getUserId(req);
       const batches = await (storage as any).getBatches(userId);
       res.json(batches);
     } catch (error) {

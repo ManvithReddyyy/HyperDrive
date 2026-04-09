@@ -83,6 +83,7 @@ export const jobSchema = z.object({
   sizeReduction: z.number().optional(),
   createdAt: z.string(),
   completedAt: z.string().optional(),
+  userId: z.string().optional(),
 });
 
 export type Job = z.infer<typeof jobSchema>;
@@ -346,9 +347,22 @@ export type CostEstimate = z.infer<typeof costEstimateSchema>;
 // ================== Users ==================
 export const users = {} as any;
 export const insertUserSchema = z.object({
-  username: z.string(),
-  password: z.string(),
+  username: z.string().min(1, "Email/Username is required"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  fullName: z.string().min(1, "Full Name is required"),
+  organization: z.string().optional(),
+  role: z.string().min(1, "Role is required"),
 });
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = { id: string; username: string; email?: string; password: string; teamId?: string; role?: string };
+export type User = { 
+  id: string; 
+  username: string; 
+  email?: string; 
+  password: string; 
+  fullName?: string;
+  organization?: string;
+  role?: string;
+  teamId?: string; 
+};
 

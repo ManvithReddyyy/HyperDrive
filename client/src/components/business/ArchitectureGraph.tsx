@@ -7,6 +7,8 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 
+import { apiRequest } from "@/lib/queryClient";
+
 interface GraphNode extends Node {
   data: {
     label: string;
@@ -44,7 +46,7 @@ export function ArchitectureGraph({ jobId }: { jobId: string }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`/api/jobs/${jobId}/graph`);
+        const res = await apiRequest("GET", `/api/jobs/${jobId}/graph`);
         const data = await res.json();
         setGraphData(data);
       } catch (err) {

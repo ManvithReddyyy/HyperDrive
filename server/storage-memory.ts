@@ -24,13 +24,14 @@ interface StorageData {
     auditLogs: any[];
     alerts: Record<string, any>;
     batches: Record<string, any>;
+    sessions: Record<string, string>; // token -> userId
 }
 
 function emptyData(): StorageData {
     return {
         jobs: {}, users: {}, templates: {}, webhooks: {},
         apiKeys: {}, teams: {}, teamMembers: [], comments: [],
-        auditLogs: [], alerts: {}, batches: {},
+        auditLogs: [], alerts: {}, batches: {}, sessions: {},
     };
 }
 
@@ -46,6 +47,7 @@ export class MemoryStorage implements IStorage {
     private auditLogs: any[];
     private alerts: Map<string, any>;
     private batches: Map<string, any>;
+    private sessions: Map<string, string>; // persistent sessions
     private saveTimer: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
@@ -62,6 +64,7 @@ export class MemoryStorage implements IStorage {
         this.auditLogs = data.auditLogs;
         this.alerts = new Map(Object.entries(data.alerts));
         this.batches = new Map(Object.entries(data.batches));
+        this.sessions = new Map(Object.entries(data.sessions || {}));
 
         const jobCount = this.jobs.size;
         if (jobCount > 0) {
@@ -111,6 +114,7 @@ export class MemoryStorage implements IStorage {
                 auditLogs: this.auditLogs,
                 alerts: Object.fromEntries(this.alerts),
                 batches: Object.fromEntries(this.batches),
+                sessions: Object.fromEntries(this.sessions),
             };
             fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
         } catch (err) {
@@ -137,6 +141,7 @@ export class MemoryStorage implements IStorage {
             createdAt: now,
             completedAt: undefined,
             filePath: (data as any).filePath,
+            userId,
         };
         this.jobs.set(id, job);
         this.scheduleSave();
@@ -150,7 +155,11 @@ export class MemoryStorage implements IStorage {
 
     async getAllJobs(userId?: string): Promise<Job[]> {
         const all = Array.from(this.jobs.values());
-        return all.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+        let filtered = all;
+        if (userId) {
+            filtered = all.filter(job => job.userId === userId); 
+        }
+        return filtered.sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
     }
 
     async updateJob(id: string, updates: Partial<Job>): Promise<Job | undefined> {
@@ -462,8 +471,24 @@ CMD ["python", "server.py"]
         return Array.from(this.users.values()).find(u => u.username === email);
     }
 
+    async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+        const user = this.users.get(id);
+        if (!user) return undefined;
+        const updated = { ...user, ...updates };
+        this.users.set(id, updated);
+        this.scheduleSave();
+        return updated;
+    }
+
     async createUser(user: InsertUser & { id: string }): Promise<User> {
-        const newUser: User = { id: user.id, username: user.username, password: "" };
+        const newUser: User = { 
+            id: user.id, 
+            username: user.username, 
+            password: user.password,
+            fullName: (user as any).fullName,
+            organization: (user as any).organization,
+            role: (user as any).role,
+        };
         this.users.set(user.id, newUser);
         this.scheduleSave();
         return newUser;
@@ -710,6 +735,21 @@ CMD ["python", "server.py"]
             result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return result;
+    }
+
+    // ================== Persistence sessions ==================
+    async createSession(token: string, userId: string): Promise<void> {
+        this.sessions.set(token, userId);
+        this.scheduleSave();
+    }
+
+    async getSession(token: string): Promise<string | undefined> {
+        return this.sessions.get(token);
+    }
+
+    async deleteSession(token: string): Promise<void> {
+        this.sessions.delete(token);
+        this.scheduleSave();
     }
 }
 

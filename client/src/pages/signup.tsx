@@ -14,6 +14,9 @@ export default function SignupPage() {
   const [, setLocation] = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [organization, setOrganization] = useState("");
+  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState("");
 
@@ -31,7 +34,18 @@ export default function SignupPage() {
       return;
     }
 
-    registerMutation.mutate({ username: email, password });
+    if (!fullName || !role) {
+      setLocalError("Full Name and Role are required");
+      return;
+    }
+
+    registerMutation.mutate({ 
+      username: email, 
+      password,
+      fullName,
+      organization: organization || undefined,
+      role
+    });
   };
 
   const error = localError || registerMutation.error?.message;
@@ -72,9 +86,22 @@ export default function SignupPage() {
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white/80 font-body">Username or Email</label>
+              <label className="text-sm font-medium text-white/80 font-body">Full Name</label>
               <Input
                 type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="John Doe"
+                disabled={registerMutation.isPending}
+                className="bg-black/20 border-white/20 text-white placeholder:text-white/40"
+                required
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-white/80 font-body">Email</label>
+              <Input
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
@@ -82,6 +109,32 @@ export default function SignupPage() {
                 className="bg-black/20 border-white/20 text-white placeholder:text-white/40"
                 required
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-white/80 font-body">Organization <span className="text-white/40 text-[10px]">(Optional)</span></label>
+                <Input
+                  type="text"
+                  value={organization}
+                  onChange={(e) => setOrganization(e.target.value)}
+                  placeholder="Acme Inc."
+                  disabled={registerMutation.isPending}
+                  className="bg-black/20 border-white/20 text-white placeholder:text-white/40 text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-white/80 font-body">Role</label>
+                <Input
+                  type="text"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  placeholder="ML Engineer"
+                  disabled={registerMutation.isPending}
+                  className="bg-black/20 border-white/20 text-white placeholder:text-white/40 text-sm"
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-1.5">

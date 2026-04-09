@@ -1,7 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { Leaf, Zap, Scale, Database, FileCode, Cpu, Calendar, TrendingDown } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface NutritionData {
     modelName: string;
@@ -40,7 +37,7 @@ export function NutritionLabel({ jobId }: NutritionLabelProps) {
     const { data, isLoading } = useQuery<NutritionData>({
         queryKey: ["/api/models", jobId, "nutrition"],
         queryFn: async () => {
-            const res = await fetch(`/api/models/${jobId}/nutrition`);
+            const res = await apiRequest("GET", `/api/models/${jobId}/nutrition`);
             if (!res.ok) throw new Error("Failed to fetch nutrition data");
             return res.json();
         },

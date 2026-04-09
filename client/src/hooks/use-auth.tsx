@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import { createContext, ReactNode, useContext } from "react";
 import {
     useQuery,
     useMutation,
@@ -6,22 +6,59 @@ import {
     UseMutationResult,
 } from "@tanstack/react-query";
 import { User, InsertUser } from "@shared/schema";
-import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import type { AuthError } from "@supabase/supabase-js";
 
 type AuthContextType = {
     user: User | null;
     isLoading: boolean;
     error: Error | null;
-    loginMutation: UseMutationResult<User, Error, LoginData>;
+    loginMutation: UseMutationResult<{ user: User; session: { access_token: string } }, Error, LoginData>;
     logoutMutation: UseMutationResult<void, Error, void>;
-    registerMutation: UseMutationResult<User, Error, InsertUser>;
+    registerMutation: UseMutationResult<{ user: User; session: { access_token: string } }, Error, InsertUser>;
     signInWithOAuth: (provider: "google" | "github" | "twitter") => Promise<void>;
     signInWithMagicLink: (email: string) => Promise<void>;
 };
 
 type LoginData = Pick<InsertUser, "username" | "password">;
+
+const TOKEN_KEY = "hd_auth_token";
+
+function getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
+}
+
+function setToken(token: string) {
+    localStorage.setItem(TOKEN_KEY, token);
+}
+
+function clearToken() {
+    localStorage.removeItem(TOKEN_KEY);
+}
+
+async function apiCall(method: string, url: string, body?: unknown): Promise<Response> {
+    const token = getToken();
+    const headers: Record<string, string> = body ? { "Content-Type": "application/json" } : {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const res = await fetch(url, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+        credentials: "include",
+    });
+
+    if (!res.ok) {
+        let message: string;
+        try {
+            const json = await res.json();
+            message = json.error || json.message || res.statusText;
+        } catch {
+            message = (await res.text()) || res.statusText;
+        }
+        throw new Error(message);
+    }
+    return res;
+}
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -29,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { toast } = useToast();
     const queryClient = useQueryClient();
 
-    // Mock user session so Supabase doesn't try to fetch and crash the app
     const {
         data: user,
         error,
@@ -37,138 +73,81 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = useQuery<User | null, Error>({
         queryKey: ["auth", "user"],
         queryFn: async () => {
-            const storedUser = localStorage.getItem("auth_user");
-            if (storedUser) {
-                return JSON.parse(storedUser);
+            const token = getToken();
+            if (!token) return null;
+            try {
+                const res = await fetch("/api/user", {
+                    headers: { "Authorization": `Bearer ${token}` },
+                });
+                if (res.status === 401) { clearToken(); return null; }
+                if (!res.ok) return null;
+                return await res.json();
+            } catch {
+                return null;
             }
-            return null;
         },
         staleTime: 5 * 60 * 1000,
         retry: false,
     });
 
-    // Listen for auth state changes
-    useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                // Just invalidate the query to refetch with updated data
-                queryClient.invalidateQueries({ queryKey: ["auth", "user"] });
-            }
-        );
-
-        return () => subscription.unsubscribe();
-    }, [queryClient]);
-
     const loginMutation = useMutation({
         mutationFn: async (credentials: LoginData) => {
-            // Mock offline login
-            return {
-                id: "local_user_1",
-                username: credentials.username,
-                password: "",
-            } as User;
+            const res = await apiCall("POST", "/api/login", credentials);
+            return await res.json();
         },
-        onSuccess: (user: User) => {
-            localStorage.setItem("auth_user", JSON.stringify(user));
-            queryClient.setQueryData(["auth", "user"], user);
-            toast({
-                title: "Welcome back!",
-                description: `Logged in as ${user.username}`,
-            });
+        onSuccess: (data) => {
+            setToken(data.session.access_token);
+            queryClient.setQueryData(["auth", "user"], data.user);
+            toast({ title: "Welcome back!", description: `Logged in as ${data.user.username}` });
         },
-        onError: (error: AuthError) => {
-            toast({
-                title: "Login failed",
-                description: error.message,
-                variant: "destructive",
-            });
+        onError: (error: Error) => {
+            toast({ title: "Login failed", description: error.message, variant: "destructive" });
         },
     });
 
     const registerMutation = useMutation({
         mutationFn: async (credentials: InsertUser) => {
-            // Mock offline registration
-            return {
-                id: "local_user_1",
-                username: credentials.username,
-                password: "",
-            } as User;
+            const res = await apiCall("POST", "/api/register", credentials);
+            return await res.json();
         },
-        onSuccess: (user: User) => {
-            localStorage.setItem("auth_user", JSON.stringify(user));
-            queryClient.setQueryData(["auth", "user"], user);
-            toast({
-                title: "Account created!",
-                description: `Welcome, ${user.username}`,
-            });
+        onSuccess: (data) => {
+            setToken(data.session.access_token);
+            queryClient.setQueryData(["auth", "user"], data.user);
+            toast({ title: "Account created!", description: `Welcome, ${data.user.fullName || data.user.username}!` });
         },
-        onError: (error: AuthError) => {
-            toast({
-                title: "Registration failed",
-                description: error.message,
-                variant: "destructive",
-            });
+        onError: (error: Error) => {
+            toast({ title: "Registration failed", description: error.message, variant: "destructive" });
         },
     });
 
     const logoutMutation = useMutation({
         mutationFn: async () => {
-            // Mock offline logout
-            localStorage.removeItem("auth_user");
+            const token = getToken();
+            if (token) {
+                try {
+                    await fetch("/api/logout", {
+                        method: "POST",
+                        headers: { "Authorization": `Bearer ${token}` },
+                    });
+                } catch { /* ignore */ }
+            }
+            clearToken();
         },
         onSuccess: () => {
             queryClient.setQueryData(["auth", "user"], null);
-            toast({
-                title: "Logged out",
-                description: "You have been logged out successfully",
-            });
+            toast({ title: "Logged out", description: "You have been logged out successfully" });
         },
-        onError: (error: AuthError) => {
-            toast({
-                title: "Logout failed",
-                description: error.message,
-                variant: "destructive",
-            });
+        onError: (error: Error) => {
+            toast({ title: "Logout failed", description: error.message, variant: "destructive" });
         },
     });
 
-    const signInWithOAuth = async (provider: "google" | "github" | "twitter") => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider,
-            options: {
-                redirectTo: `${window.location.origin}/`,
-            },
-        });
-
-        if (error) {
-            toast({
-                title: "OAuth failed",
-                description: error.message,
-                variant: "destructive",
-            });
-        }
+    const signInWithOAuth = async (_provider: "google" | "github" | "twitter") => {
+        toast({ title: "OAuth not available", description: "Please use email and password login.", variant: "destructive" });
     };
 
-    const signInWithMagicLink = async (email: string) => {
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: `${window.location.origin}/`,
-            },
-        });
-
-        if (error) {
-            toast({
-                title: "Failed to send magic link",
-                description: error.message,
-                variant: "destructive",
-            });
-        } else {
-            toast({
-                title: "Check your email!",
-                description: `We sent a magic link to ${email}`,
-            });
-        }
+    const signInWithMagicLink = async (_email: string) => {
+        toast({ title: "Magic link not available", description: "Please use email and password login.", variant: "destructive" });
     };
 
     return (

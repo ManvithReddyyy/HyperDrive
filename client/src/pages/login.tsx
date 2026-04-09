@@ -23,7 +23,11 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({ username: email, password });
+    loginMutation.mutate({ username: email, password }, {
+      onSuccess: () => {
+        setLocation("/dashboard");
+      },
+    });
   };
 
   return (
@@ -59,12 +63,12 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-white/80 font-body">Username or Email</label>
+              <label className="text-sm font-medium text-white/80 font-body">Email</label>
               <Input
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your username or email"
+                placeholder="name@example.com"
                 disabled={loginMutation.isPending}
                 className="bg-black/20 border-white/20 text-white placeholder:text-white/40"
                 required

@@ -1,10 +1,17 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+
+const TOKEN_KEY = "hd_auth_token";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    let message: string;
+    try {
+      const json = await res.json();
+      message = json.error || json.message || res.statusText;
+    } catch {
+      message = (await res.text()) || res.statusText;
+    }
+    throw new Error(message);
   }
 }
 
@@ -13,15 +20,9 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // AUTH DISABLED for presentation - bypass Supabase
-  // const { data: { session } } = await supabase.auth.getSession();
-  // const token = session?.access_token;
-
+  const token = localStorage.getItem(TOKEN_KEY);
   const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
-
-  // if (token) {
-  //   headers["Authorization"] = `Bearer ${token}`;
-  // }
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const res = await fetch(url, {
     method,
@@ -40,14 +41,9 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
     async ({ queryKey }) => {
-      // AUTH DISABLED for presentation - bypass Supabase
-      // const { data: { session } } = await supabase.auth.getSession();
-      // const token = session?.access_token;
-
+      const token = localStorage.getItem(TOKEN_KEY);
       const headers: Record<string, string> = {};
-      // if (token) {
-      //   headers["Authorization"] = `Bearer ${token}`;
-      // }
+      if (token) headers["Authorization"] = `Bearer ${token}`;
 
       const res = await fetch(queryKey.join("/") as string, {
         credentials: "include",

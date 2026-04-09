@@ -106,11 +106,22 @@ export default function SettingsPage() {
   return (
     <div className="h-full overflow-auto p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div>
-          <h2 className="text-2xl font-semibold">Settings</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your account settings and preferences
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold">Settings</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Manage your account settings and preferences
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+            className="text-muted-foreground hover:text-foreground border-white/10 hover:bg-white/5"
+          >
+            {logoutMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <LogOut className="h-4 w-4 mr-2" />}
+            Sign Out
+          </Button>
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">

@@ -11,6 +11,8 @@ import { ArchitectureGraph } from "@/components/business/ArchitectureGraph";
 import { HardwareMatrix } from "@/components/business/HardwareMatrix";
 import type { Job } from "@shared/schema";
 
+import { apiRequest } from "@/lib/queryClient";
+
 export default function AnalysisPage() {
   const [selectedJobId, setSelectedJobId] = useState<string>("");
 
@@ -18,7 +20,7 @@ export default function AnalysisPage() {
   const { data: jobs = [] } = useQuery<Job[]>({
     queryKey: ["/api/jobs"],
     queryFn: async () => {
-      const res = await fetch("/api/jobs");
+      const res = await apiRequest("GET", "/api/jobs");
       return res.json();
     },
   });

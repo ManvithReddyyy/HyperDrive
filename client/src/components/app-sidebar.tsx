@@ -34,19 +34,9 @@ const navItems = [
     icon: Scale,
   },
   {
-    title: "Teams",
-    url: "/teams",
-    icon: Users,
-  },
-  {
     title: "Impact Calculator",
     url: "/playground",
     icon: Leaf,
-  },
-  {
-    title: "Analysis",
-    url: "/analysis",
-    icon: BarChart3,
   },
   {
     title: "Deployment",

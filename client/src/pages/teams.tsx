@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -36,77 +37,66 @@ const ROLE_BADGES: Record<string, { label: string; variant: "default" | "seconda
 };
 
 export default function TeamsPage() {
-    const [teams, setTeams] = useState<Team[]>([]);
-    const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
-    const [members, setMembers] = useState<TeamMember[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isCreating, setIsCreating] = useState(false);
-    const [isInviting, setIsInviting] = useState(false);
-    const [createDialogOpen, setCreateDialogOpen] = useState(false);
-    const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
     const { toast } = useToast();
+    const queryClient = useQueryClient();
 
     const [newTeam, setNewTeam] = useState({ name: "", description: "" });
     const [inviteForm, setInviteForm] = useState({ email: "", role: "member" });
 
-    const LS_TEAMS_KEY = "hd_teams";
-    const LS_MEMBERS_KEY = "hd_team_members";
+    // Fetch teams
+    const { data: teams = [], isLoading } = useQuery<Team[]>({
+        queryKey: ["/api/teams"],
+    });
 
-    const loadTeams = (): Team[] => {
-        try { return JSON.parse(localStorage.getItem(LS_TEAMS_KEY) || "[]"); } catch { return []; }
-    };
-    const loadMembers = (): TeamMember[] => {
-        try { return JSON.parse(localStorage.getItem(LS_MEMBERS_KEY) || "[]"); } catch { return []; }
-    };
-    const saveTeams = (t: Team[]) => localStorage.setItem(LS_TEAMS_KEY, JSON.stringify(t));
-    const saveMembers = (m: TeamMember[]) => localStorage.setItem(LS_MEMBERS_KEY, JSON.stringify(m));
+    // Fetch members when selectedTeam changes
+    const { data: members = [], isLoading: isLoadingMembers } = useQuery<TeamMember[]>({
+        queryKey: ["/api/teams", selectedTeam?.id, "members"],
+        enabled: !!selectedTeam,
+    });
 
-    useEffect(() => {
-        const stored = loadTeams();
-        setTeams(stored);
-        if (stored.length > 0) setSelectedTeam(stored[0]);
-        setIsLoading(false);
-    }, []);
+    // Auto-select first team if none selected
+    if (!selectedTeam && teams.length > 0) {
+        setSelectedTeam(teams[0]);
+    }
 
-    useEffect(() => {
-        if (selectedTeam) {
-            const all = loadMembers();
-            setMembers(all.filter(m => m.teamId === selectedTeam.id));
-        }
-    }, [selectedTeam]);
+
+    const createTeamMutation = useMutation({
+        mutationFn: async (json: any) => {
+            const res = await apiRequest("POST", "/api/teams", json);
+            return res.json();
+        },
+        onSuccess: (team) => {
+            queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
+            setSelectedTeam(team);
+            toast({ title: "Success", description: "Team created successfully" });
+            setCreateDialogOpen(false);
+            setNewTeam({ name: "", description: "" });
+        },
+    });
+
+    const inviteMemberMutation = useMutation({
+        mutationFn: async (json: any) => {
+            const res = await apiRequest("POST", `/api/teams/${selectedTeam?.id}/invite`, json);
+            return res.json();
+        },
+        onSuccess: (res) => {
+            if (res.success) {
+                queryClient.invalidateQueries({ queryKey: ["/api/teams", selectedTeam?.id, "members"] });
+                toast({ title: "Success", description: `${inviteForm.email} added to team` });
+                setInviteDialogOpen(false);
+                setInviteForm({ email: "", role: "member" });
+            } else {
+                toast({ title: "Error", description: "User not found or already in team", variant: "destructive" });
+            }
+        },
+    });
 
     const createTeam = () => {
         if (!newTeam.name.trim()) {
             toast({ title: "Error", description: "Team name is required", variant: "destructive" });
             return;
         }
-        setIsCreating(true);
-        const team: Team = {
-            id: crypto.randomUUID(),
-            name: newTeam.name.trim(),
-            description: newTeam.description.trim() || undefined,
-            ownerId: "demo-user",
-            createdAt: new Date().toISOString(),
-        };
-        const ownerMember: TeamMember = {
-            id: crypto.randomUUID(),
-            teamId: team.id,
-            userId: "demo-user",
-            username: "Demo User",
-            role: "owner",
-            joinedAt: new Date().toISOString(),
-        };
-        const updatedTeams = [...loadTeams(), team];
-        const updatedMembers = [...loadMembers(), ownerMember];
-        saveTeams(updatedTeams);
-        saveMembers(updatedMembers);
-        setTeams(updatedTeams);
-        setSelectedTeam(team);
-        setMembers([ownerMember]);
-        toast({ title: "Success", description: "Team created successfully" });
-        setCreateDialogOpen(false);
-        setNewTeam({ name: "", description: "" });
-        setIsCreating(false);
+        createTeamMutation.mutate(newTeam);
     };
 
     const inviteMember = () => {
@@ -114,22 +104,7 @@ export default function TeamsPage() {
             toast({ title: "Error", description: "Email is required", variant: "destructive" });
             return;
         }
-        setIsInviting(true);
-        const newMember: TeamMember = {
-            id: crypto.randomUUID(),
-            teamId: selectedTeam.id,
-            userId: inviteForm.email,
-            username: inviteForm.email,
-            role: inviteForm.role as TeamMember["role"],
-            joinedAt: new Date().toISOString(),
-        };
-        const updatedMembers = [...loadMembers(), newMember];
-        saveMembers(updatedMembers);
-        setMembers(updatedMembers.filter(m => m.teamId === selectedTeam.id));
-        toast({ title: "Success", description: `${inviteForm.email} added to team` });
-        setInviteDialogOpen(false);
-        setInviteForm({ email: "", role: "member" });
-        setIsInviting(false);
+        inviteMemberMutation.mutate(inviteForm);
     };
 
     const getInitials = (name: string) => {
@@ -194,8 +169,8 @@ export default function TeamsPage() {
                             </div>
                             <DialogFooter>
                                 <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-                                <Button onClick={createTeam} disabled={isCreating}>
-                                    {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                <Button onClick={createTeam} disabled={createTeamMutation.isPending}>
+                                    {createTeamMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Create Team
                                 </Button>
                             </DialogFooter>
@@ -308,8 +283,8 @@ export default function TeamsPage() {
                                             </div>
                                             <DialogFooter>
                                                 <Button variant="outline" onClick={() => setInviteDialogOpen(false)}>Cancel</Button>
-                                                <Button onClick={inviteMember} disabled={isInviting}>
-                                                    {isInviting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                <Button onClick={inviteMember} disabled={inviteMemberMutation.isPending}>
+                                                    {inviteMemberMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                                     Send Invitation
                                                 </Button>
                                             </DialogFooter>
